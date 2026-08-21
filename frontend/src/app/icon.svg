@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- پس‌زمینه مشکی با گوشه‌های گرد -->
+  <rect width="100" height="100" rx="24" fill="#000000" />
+  
+  <!-- حرف C استودیو (دقیقاً همون تناسبات قبلی، وسط‌چین شده) -->
+  <path 
+    d="M 69 29 L 52 29 A 21 21 0 0 0 52 71 L 69 71" 
+    fill="none" 
+    stroke="#888888" 
+    stroke-width="10" 
+    stroke-linecap="butt" 
+  />
+</svg>
