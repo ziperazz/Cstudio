@@ -12,7 +12,6 @@ import Preloader from '@/components/Preloader';
 
 import { orbitronFont } from '@/app/fonts';
 
-
 gsap.registerPlugin(ScrollTrigger);
 
 // 🎛️===================================================================🎛️
@@ -92,54 +91,6 @@ const navLinks = [
   { name: 'پنل مدیریت', href: '/auth' },
 ];
 
-// 🎛️ هندسه‌ی ماسک هیرو (سینک شده با هوم پیج + رفع باگ‌های ۱ پیکسلی)
-const maskColorHex = "#000000ff";
-const frameBorderWidth = "clamp(12px, 1.2vw, 17px)";
-const horizontalAlignment = "calc(((100vw - (var(--frame) * 2) - (var(--sep) * 2)) * 0.38 / 3.18) + var(--i-gap))";
-
-const iColumnFlex = "0.38";
-const sideColumnFlex = "1.4";
-const iDotOvalness = "1.006";
-const horizontalLineWidth = "clamp(5px, 0.5vw, 8px)";
-const separatorLineWidth = "clamp(6px, 0.6vw, 10px)";
-
-const cBoneWidth = "clamp(8px, 1.1vw, 16px)";
-const cBoneHeight = "clamp(75px, 7.5vw, 135px)";
-const cArmWidth = "45%";
-const iGapSize = "clamp(8px, 1vw, 14px)";
-const innerRoundness = "20px";
-
-const heroWordsFontFamily = englishFontFamily;
-const heroWordsFontWeight = 300;
-const heroWordsFontSize = "clamp(24px, 1.88vw, 36px)";
-const heroWordsLetterSpacing = "0.2em";
-const heroWordsColor = "#888888";
-const heroWordsHoverColor = "#ffffff";
-const heroWordsInset = "clamp(28px, 2.5vw, 48px)";
-const heroWordsBottom = "clamp(28px, 2.24vw, 43px)";
-const heroWordsTransitionSpeed = "0.5s";
-
-const animDuration = 0.8;
-const startDelay = 0.5;
-
-const ENABLE_HERO_TUNER = false;
-
-type HeroTune = {
-  frame: number; sep: number; armH: number; armW: number; boneW: number; boneH: number; iGap: number; iBodyH: number; radius: number; align: number; sideFlex: number; iFlex: number; dotOvalness: number; wordSize: number; wordInset: number; wordBottom: number;   
-};
-
-const MOBILE_HERO_TUNE: HeroTune = {
-  frame: 13, sep: 6, armH: 6, armW: 52, boneW: 10, boneH: 10, iGap: 8, iBodyH: 39, radius: 13, align: 19, sideFlex: 1.25, iFlex: 0.5, dotOvalness: 1.006, wordSize: 18, wordInset: 19, wordBottom: 12,
-};
-
-const TABLET_LAPTOP_HERO_TUNE: HeroTune = {
-  frame: 13, sep: 6, armH: 6, armW: 47, boneW: 13, boneH: 14, iGap: 8, iBodyH: 39, radius: 13, align: 27, sideFlex: 1.25, iFlex: 0.32, dotOvalness: 1.006, wordSize: 18, wordInset: 19, wordBottom: 12,
-};
-
-const tuneToVars = (t: HeroTune): React.CSSProperties => ({
-  ['--frame' as string]: `${t.frame}px`, ['--sep' as string]: `${t.sep}px`, ['--arm-h' as string]: `${t.armH}px`, ['--arm-w' as string]: `${t.armW}%`, ['--bone-w' as string]: `${t.boneW}px`, ['--bone-h' as string]: `${t.boneH}svh`, ['--i-gap' as string]: `${t.iGap}px`, ['--i-body-h' as string]: `${t.iBodyH}svh`, ['--r' as string]: `${t.radius}px`, ['--align' as string]: `${t.align}%`, ['--side-flex' as string]: `${t.sideFlex}`, ['--i-flex' as string]: `${t.iFlex}`, ['--dot-ovalness' as string]: `${t.dotOvalness}`, ['--word-size' as string]: `${t.wordSize}px`, ['--word-inset' as string]: `${t.wordInset}px`, ['--word-bottom' as string]: `${t.wordBottom}px`,
-});
-
 // 🚀 آپدیت اینترفیس منطبق با دیتابیس جدید
 interface Project {
   _id: string;
@@ -168,27 +119,13 @@ export default function ProjectDetailsPage() {
   const isMobile = windowWidth > 0 && windowWidth <= 768;
   const isTabletOrLaptop = windowWidth > 768 && windowWidth <= 1366;
 
-  const [tune, setTune] = useState<HeroTune>(MOBILE_HERO_TUNE);
-  const [applyOnDesktop, setApplyOnDesktop] = useState(false);
-
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [contactDrawerOpen, setContactDrawerOpen] = useState(false);
   
   const headerRef = useRef<HTMLElement>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
   const pageRef = useRef<HTMLDivElement>(null);
-
-  const heroRef = useRef<HTMLElement>(null);
-  const maskRef = useRef<HTMLDivElement>(null);
-  const cRef = useRef<HTMLDivElement>(null);
-  const iDotRef = useRef<HTMLDivElement>(null);
-  const iBodyRef = useRef<HTMLDivElement>(null);
-  const c2Ref = useRef<HTMLDivElement>(null);
-  const doRef = useRef<HTMLSpanElement>(null);
-  const thingsRef = useRef<HTMLSpanElement>(null);
-  const blackOverlayRef = useRef<HTMLDivElement>(null);
   const detailsSectionRef = useRef<HTMLElement>(null);
-
   const moreWorksSectionRef = useRef<HTMLElement>(null);
   const moreWorksTextRef = useRef<HTMLDivElement>(null);
   const moreWorksCardsRef = useRef<HTMLDivElement>(null);
@@ -214,15 +151,6 @@ export default function ProjectDetailsPage() {
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  useEffect(() => {
-    if (!ENABLE_HERO_TUNER) return;
-    setTune(isTabletOrLaptop ? TABLET_LAPTOP_HERO_TUNE : MOBILE_HERO_TUNE);
-  }, [isTabletOrLaptop]);
-
-  useEffect(() => {
-    try { localStorage.removeItem('heroTune'); } catch { /* ignore */ }
   }, []);
 
   useEffect(() => {
@@ -264,18 +192,6 @@ export default function ProjectDetailsPage() {
         onEnter: () => gsap.to(headerRef.current, { backgroundColor: solidBlackColor, duration: 0.15, overwrite: "auto" }),
         onLeaveBack: () => gsap.to(headerRef.current, { backgroundColor: "rgba(0,0,0,0)", duration: 0.15, overwrite: "auto" }),
       });
-
-      // 🎯 انیمیشن ماسک دقیقاً با scale 1
-      gsap.fromTo(maskRef.current, { scale: 1.01 }, { scale: 1, duration: 1.4, ease: "power3.out", delay: startDelay - 0.2 });
-
-      const tlHero = gsap.timeline({ delay: startDelay });
-      tlHero.to(blackOverlayRef.current, { opacity: 0, duration: 0.4, ease: "power2.out" }, 0)
-        .fromTo(cRef.current, { xPercent: -50 }, { xPercent: 0, duration: animDuration, ease: "power2.inOut" }, 0)
-        .fromTo(iDotRef.current, { yPercent: -50 }, { yPercent: 0, duration: animDuration, ease: "power2.inOut" }, ">")
-        .fromTo(iBodyRef.current, { yPercent: 0 }, { yPercent: -50, duration: animDuration, ease: "power2.inOut" }, "<")
-        .fromTo(c2Ref.current, { xPercent: 0 }, { xPercent: -50, duration: animDuration, ease: "power2.inOut" }, ">");
-
-      gsap.fromTo([doRef.current, thingsRef.current], { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 1.2, stagger: 0.2, ease: "power4.out", delay: startDelay + 1 });
 
       if (moreWorksSectionRef.current && moreWorksTextRef.current && moreWorksCardsRef.current) {
         gsap.fromTo(moreWorksTextRef.current,
@@ -323,14 +239,12 @@ export default function ProjectDetailsPage() {
   const scrollRightNav = () => {
     if (carouselRef.current) carouselRef.current.scrollBy({ left: getScrollAmount(), behavior: 'smooth' });
   };
-
-  const liveHeroVars = ENABLE_HERO_TUNER && (isMobile || isTabletOrLaptop || applyOnDesktop) ? tuneToVars(tune) : undefined;
     
   const moreWorksPaddingLeft = isMobile ? '20px' : isTabletOrLaptop ? '35px' : moreWorksTitleMarginLeft;
   const moreWorksTitleMargin = isMobile ? '0px' : isTabletOrLaptop ? '60px' : moreWorksTitleMarginRight;
   const moreWorksCardW = isMobile ? '85vw' : isTabletOrLaptop ? '42vw' : moreWorksCardWidth;
 
-  const heroVideoUrl = project?.videos.length && project.videos.length > 0 ? `${process.env.NEXT_PUBLIC_BACKEND_URL}${project.videos[0]}` : '';
+  // پوستر پیش‌فرض برای ویدیوها (استفاده از شات اول پروژه)
   const heroPoster = project?.screenshots && project.screenshots.length > 0 ? `${process.env.NEXT_PUBLIC_BACKEND_URL}${project.screenshots[0]}` : '';
 
   return (
@@ -433,73 +347,6 @@ export default function ProjectDetailsPage() {
                 height: auto !important; 
                 aspect-ratio: 1/1 !important;
               }
-            }
-
-            /* 🚀 هیرو دقیقاً سینک شده با هوم پیج (بدون خط یک پیکسلی) */
-            .hero {
-              --mask: ${maskColorHex}; --frame: ${frameBorderWidth}; --sep: ${separatorLineWidth}; --arm-h: ${horizontalLineWidth}; --arm-w: ${cArmWidth}; --bone-w: ${cBoneWidth}; --bone-h: ${cBoneHeight}; --i-gap: ${iGapSize}; --align: ${horizontalAlignment}; --i-body-h: calc(100% - var(--align)); --r: ${innerRoundness}; --side-flex: ${sideColumnFlex}; --i-flex: ${iColumnFlex}; --dot-ovalness: ${iDotOvalness}; --word-size: ${heroWordsFontSize}; --word-inset: ${heroWordsInset}; --word-bottom: ${heroWordsBottom};
-              position: sticky; top: 0; width: 100%; height: 100vh; height: 100svh; overflow: hidden; background: ${globalBgColor}; color: #fff; user-select: none; transform: translateZ(0); z-index: 10;
-            }
-
-            @media (max-width: 768px) {
-              .hero { --frame: clamp(9px, 2.8vw, 14px); --sep: clamp(5px, 1.8vw, 9px); --arm-h: clamp(4px, 1.5vw, 7px); --arm-w: 52%; --bone-w: clamp(9px, 3.2vw, 15px); --bone-h: clamp(46px, 10svh, 90px); --i-gap: clamp(7px, 2.5vw, 12px); --i-body-h: 60svh; --r: clamp(10px, 3.5vw, 18px); --align: 19%; --side-flex: 1.25; --i-flex: 0.5; --word-size: clamp(15px, 4.4vw, 22px); --word-inset: clamp(14px, 4.5vw, 26px); --word-bottom: clamp(12px, 3.5vw, 22px); }
-            }
-
-            @media (max-width: 900px) and (orientation: landscape) {
-              .hero { --align: 26%; --bone-h: clamp(38px, 16svh, 80px); }
-            }
-
-            .hero__media { position: absolute; inset: 0; z-index: 0; }
-            .hero__media video { width: 100%; height: 100%; object-fit: cover; display: block; transform: scale(1.15); }
-            @media (max-width: 768px) { .hero__media video { transform: scale(1.45); } }
-
-            .hero__blackout { position: absolute; inset: 0; z-index: 20; background: ${solidBlackColor}; pointer-events: none; }
-            
-            /* 🎯 حاشیه امن برای دور صفحه */
-            .hero__mask { position: absolute; inset: -2px; z-index: 10; display: flex; overflow: hidden; pointer-events: none; border: calc(var(--frame) + 2px) solid var(--mask); }
-
-            .col { position: relative; height: 100%; overflow: hidden; }
-            .col--side { flex: var(--side-flex); }
-            .col--i { flex: var(--i-flex); }
-            
-            /* 🎯 سایه های 2 پیکسلی برای پوشوندن خطای دید وسط C */
-.sep { flex: 0 0 var(--sep); height: 100%; background: var(--mask); position: relative; z-index: 5; box-shadow: 0 0 0 2px var(--mask); }
-            .fill { position: absolute; inset: 0; pointer-events: none; box-shadow: 0 0 0 2000px var(--mask); }
-            .cut-top .fill { bottom: -2px; }
-            .cut-bottom .fill { top: -2px; }
-
-            .slider-x { position: absolute; top: 0; left: 0; width: 200%; height: 100%; display: flex; }
-            .slider-y { position: absolute; top: 0; left: 0; width: 100%; height: 200%; display: flex; flex-direction: column; }
-            .half-x { width: 50%; height: 100%; position: relative; }
-            .half-y { width: 100%; height: 50%; position: relative; }
-            .solid { background: var(--mask); position: relative; z-index: 5; box-shadow: 0 0 0 2px var(--mask); }
-
-            .cut-top { position: absolute; top: 0; left: 0; right: 0; bottom: calc(100% - var(--align) + var(--arm-h) / 2 - 0.5px); overflow: hidden; }
-            .cut-bottom { position: absolute; top: calc(var(--align) + var(--arm-h) / 2 - 0.5px); left: 0; right: 0; bottom: 0; overflow: hidden; }
-
-            .arm { position: absolute; right: 0; top: var(--align); transform: translateY(-50%); width: var(--arm-w); height: var(--arm-h); background: var(--mask); z-index: 5; box-shadow: 0 0 0 2px var(--mask); }
-            .bone { position: absolute; top: 50%; left: calc(var(--bone-w) / -2); transform: translateY(-50%); width: var(--bone-w); height: var(--bone-h); background: var(--mask); border-radius: var(--r); z-index: 5; box-shadow: 0 0 0 2px var(--mask); }
-
-            .i-dot-zone { position: absolute; top: 0; left: 0; width: 100%; height: calc(var(--align) - var(--i-gap)); overflow: hidden; }
-            .i-dot { position: absolute; bottom: 0; left: 50%; width: calc(100% - 4px); aspect-ratio: 1 / 1; border-radius: 50%; transform: translateX(-50%) scaleX(var(--dot-ovalness)); box-shadow: 0 0 0 2000px var(--mask); }
-            
-            .i-gap { position: absolute; left: 0; width: 100%; top: calc(var(--align) - var(--i-gap)); height: var(--i-gap); background: var(--mask); z-index: 5; box-shadow: 0 0 0 2px var(--mask); }
-            .i-body-zone { position: absolute; left: 0; right: 0; top: var(--align); height: var(--i-body-h); overflow: hidden; }
-
-            .hero__words { position: absolute; inset: 0; z-index: 30; pointer-events: none; }
-            .hero__word { position: absolute; bottom: calc(var(--frame) + var(--word-bottom)); pointer-events: auto; cursor: pointer; }
-            .hero__word--left  { left: calc(var(--frame) + var(--word-inset)); }
-            .hero__word--right { right: calc(var(--frame) + var(--word-inset)); }
-            .hero__word span { display: block; text-transform: uppercase; line-height: 1; font-family: ${heroWordsFontFamily}; font-weight: ${heroWordsFontWeight}; font-size: var(--word-size); letter-spacing: ${heroWordsLetterSpacing}; color: ${heroWordsColor}; transition: color ${heroWordsTransitionSpeed} ease; }
-            .hero__word:hover span { color: ${heroWordsHoverColor}; }
-
-            @media (prefers-reduced-motion: reduce) { .hero__word span { transition: none; } }
-            @media (max-width: 1024px) {
-              .col--i { display: flex; flex-direction: column; }
-              .i-dot-zone { position: relative; top: auto; left: auto; width: 100%; height: auto; aspect-ratio: 1 / 1; flex-shrink: 0; }
-              .i-dot { top: 0; bottom: auto; }
-              .i-gap { position: relative; top: auto; left: auto; width: 100%; flex-shrink: 0; }
-              .i-body-zone { position: relative; top: auto; left: auto; right: auto; width: 100%; height: auto; flex-grow: 1; }
             }
           `}</style>
 
@@ -637,88 +484,7 @@ export default function ProjectDetailsPage() {
             )}
           </AnimatePresence>
 
-          <section ref={heroRef} className="hero antialiased" dir="ltr" style={liveHeroVars}>
-            <div className="hero__media">
-              <video autoPlay loop muted playsInline poster={heroPoster}>
-                <source src={heroVideoUrl} type="video/mp4" />
-              </video>
-            </div>
-
-            <div ref={blackOverlayRef} className="hero__blackout" />
-
-            <div ref={maskRef} className="hero__mask">
-              <div className="col col--side">
-                <div ref={cRef} className="slider-x">
-                  <div className="half-x">
-                    <div className="cut-top">
-                      <div className="fill" style={{ borderRadius: "0 var(--r) var(--r) 0" }} />
-                    </div>
-                    <div className="cut-bottom">
-                      <div className="fill" style={{ borderRadius: "0 var(--r) 0 0" }} />
-                    </div>
-                    <div className="arm">
-                      <div className="bone" />
-                    </div>
-                  </div>
-                  <div className="half-x solid" />
-                </div>
-              </div>
-
-              <div className="sep" />
-
-              <div className="col col--i">
-                <div className="i-dot-zone">
-                  <div ref={iDotRef} className="slider-y">
-                    <div className="half-y">
-                      <div className="i-dot" />
-                    </div>
-                    <div className="half-y solid" />
-                  </div>
-                </div>
-
-                <div className="i-gap" />
-
-                <div className="i-body-zone">
-                  <div ref={iBodyRef} className="slider-y">
-                    <div className="half-y solid" />
-                    <div className="half-y" style={{ overflow: "hidden" }}>
-                      <div className="fill" style={{ borderRadius: "var(--r) var(--r) 0 0" }} />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="sep" />
-
-              <div className="col col--side">
-                <div ref={c2Ref} className="slider-x">
-                  <div className="half-x solid" />
-                  <div className="half-x">
-                    <div className="cut-top">
-                      <div className="fill" style={{ borderRadius: "var(--r) 0 var(--r) 0" }} />
-                    </div>
-                    <div className="cut-bottom">
-                      <div className="fill" style={{ borderRadius: "0 var(--r) 0 0" }} />
-                    </div>
-                    <div className="arm">
-                      <div className="bone" />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="hero__words">
-              <div className="hero__word hero__word--left">
-                <span ref={doRef}>DO</span>
-              </div>
-              <div className="hero__word hero__word--right">
-                <span ref={thingsRef}>THINGS</span>
-              </div>
-            </div>
-          </section>
-
-          <section ref={detailsSectionRef} className="w-full bg-black relative z-10 py-32" dir="rtl" style={{ fontFamily: persianFontFamily }}>
+          <section ref={detailsSectionRef} className="w-full bg-black relative z-10 pt-[150px] md:pt-[200px] pb-32" dir="rtl" style={{ fontFamily: persianFontFamily }}>
             <div className="max-w-[1700px] mx-auto px-6 md:px-12">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
                 <div className="lg:col-span-4">

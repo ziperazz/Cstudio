@@ -7,8 +7,6 @@ import { fetchWithAuth } from '@/utils/api';
 // 🎯 وارد کردن فونت‌های گوگل برای تایپوگرافی حرفه‌ای
 import { orbitronFont, outfitFont } from '@/app/fonts';
 
-
-
 const persianFontFamily = '"AzarMehr", "OpenAI Sans", sans-serif';
 
 // 🎯 تبدیل اعداد انگلیسی به فارسی (برای تاریخ‌ها)
@@ -290,14 +288,15 @@ export default function AdminContactsPage() {
           </div>
         ) : (
           <div className="flex flex-col">
-            {/* هدر لیست */}
+            {/* 🎯 هدر لیست */}
             <div className="grid grid-cols-[40px_minmax(150px,1fr)_minmax(120px,1fr)_minmax(150px,2fr)_80px] gap-4 px-6 py-5 border-b border-white/5 text-xs font-bold text-zinc-500 uppercase tracking-widest items-center hidden md:grid bg-[#050505]/50">
               <button onClick={handleSelectAll} className="w-5 h-5 rounded-md border border-zinc-600 flex items-center justify-center hover:border-white transition-colors mx-auto cursor-pointer">
-                {selectedIds.size === filteredMessages.length && <div className="w-2.5 h-2.5 bg-white rounded-sm" />}
+                {selectedIds.size === filteredMessages.length && filteredMessages.length > 0 && <div className="w-2.5 h-2.5 bg-white rounded-sm" />}
               </button>
-              <span>فرستنده</span>
-              <span>شماره تماس</span>
-              <span>متن پیام (خلاصه)</span>
+              <span className="text-right">فرستنده</span>
+              {/* 🎯 کلمه شماره تماس وسط‌چین شد تا دقیقاً بالای اعداد قرار بگیره */}
+              <span className="text-center w-full block">شماره تماس</span>
+              <span className="text-right pr-4">متن پیام (خلاصه)</span>
               <span className="text-left">زمان</span>
             </div>
 
@@ -313,19 +312,19 @@ export default function AdminContactsPage() {
                     ${!msg.isRead ? 'bg-white/5 hover:bg-white/10' : 'bg-transparent hover:bg-white/5'} 
                     ${isSelected ? '!bg-white/10' : ''}`}
                 >
-                  {/* چک‌باکس و وضعیت */}
-                  <div className="flex flex-col md:flex-row items-center gap-3 justify-self-center relative">
+                  {/* 🎯 چک‌باکس و چراغ وضعیت (جدا شده و مرتب) */}
+                  <div className="relative flex items-center justify-center w-full h-full">
                     <button 
                       onClick={(e) => toggleSelect(msg._id, e)}
-                      className={`w-5 h-5 rounded-md border flex items-center justify-center transition-colors cursor-pointer
+                      className={`w-5 h-5 rounded-md border flex items-center justify-center transition-colors cursor-pointer relative z-10
                         ${isSelected ? 'border-white bg-white' : 'border-zinc-600 group-hover:border-zinc-400'}`}
                     >
                       {isSelected && <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="black" strokeWidth="4"><polyline points="20 6 9 17 4 12"/></svg>}
                     </button>
-                    {/* 🚀 نشانگر درخشان پیام نخوانده */}
-                    {!msg.isRead && (
-                      <div className="w-2 h-2 rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.8)] md:absolute md:right-5 animate-pulse" />
-                    )}
+                   {/* 🚀 چراغ پیام نخوانده با فاصله استاندارد از مربع */}
+{!msg.isRead && (
+  <div className="absolute -right-2 top-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-white shadow-[0_0_10px_rgba(255,255,255,0.8)] animate-pulse" />
+)}
                   </div>
 
                   {/* اطلاعات موبایل و دسکتاپ */}
@@ -337,9 +336,10 @@ export default function AdminContactsPage() {
                     <span className="text-sm text-zinc-500 truncate w-full font-light">{msg.message}</span>
                   </div>
 
-                  <span className={`hidden md:block truncate font-bold text-base ${!msg.isRead ? 'text-white' : 'text-zinc-400'}`}>{msg.name}</span>
-                  <span className={`hidden md:block text-sm tracking-wider ${!msg.isRead ? 'text-zinc-300' : 'text-zinc-500'} ${outfitFont.className}`} dir="ltr">{msg.phone}</span>
-                  <span className={`hidden md:block text-sm truncate pr-4 font-light ${!msg.isRead ? 'text-zinc-300' : 'text-zinc-500'}`}>{msg.message}</span>
+                  <span className={`hidden md:block truncate font-bold text-base text-right ${!msg.isRead ? 'text-white' : 'text-zinc-400'}`}>{msg.name}</span>
+                  {/* 🎯 شماره تماس دقیقاً وسط‌چین شد تا زیر هدر خودش بشینه */}
+                  <span className={`hidden md:block text-sm tracking-wider text-center w-full ${!msg.isRead ? 'text-zinc-300' : 'text-zinc-500'} ${outfitFont.className}`} dir="ltr">{msg.phone}</span>
+                  <span className={`hidden md:block text-sm truncate pr-4 font-light text-right ${!msg.isRead ? 'text-zinc-300' : 'text-zinc-500'}`}>{msg.message}</span>
                   <span className={`hidden md:block text-xs text-left tracking-widest ${!msg.isRead ? 'text-zinc-400' : 'text-zinc-600'} ${outfitFont.className}`} dir="ltr">{formatTime(msg.createdAt)}</span>
                 </motion.div>
               );

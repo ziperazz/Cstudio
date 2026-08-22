@@ -1,4 +1,4 @@
-const API_URL = 'https://cstudio.ir/api';
+const API_URL = 'http://localhost:5000/api';
 
 export async function fetchWithAuth(
   endpoint: string, 

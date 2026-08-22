@@ -8,8 +8,6 @@ import { fetchWithAuth } from '@/utils/api';
 // 🎯 وارد کردن فونت‌های گوگل برای ترکیب تایپوگرافی حرفه‌ای
 import { orbitronFont, outfitFont } from '@/app/fonts';
 
-
-
 const persianFontFamily = '"AzarMehr", "OpenAI Sans", sans-serif';
 
 export default function NewProjectPage() {
@@ -21,6 +19,7 @@ export default function NewProjectPage() {
   const [teaserName, setTeaserName] = useState('');
   const [description, setDescription] = useState('');
   const [bottomText, setBottomText] = useState('');
+  const [category, setCategory] = useState('teaser'); // 👈 استیت دسته‌بندی اضافه شد
   const [priority, setPriority] = useState<number>(5); 
   const [videoFiles, setVideoFiles] = useState<File[]>([]); 
   
@@ -28,16 +27,14 @@ export default function NewProjectPage() {
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
 
-  // 🎥 هندل کردن انتخاب ویدیوها (حل مشکل جایگزین شدن فایل‌ها)
+  // 🎥 هندل کردن انتخاب ویدیوها
   const handleVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const newFiles = Array.from(e.target.files);
       
       setVideoFiles((prevFiles) => {
-        // ترکیب فایل‌های قبلی با فایل‌های جدید
         const combinedFiles = [...prevFiles, ...newFiles];
         
-        // اگر بیشتر از 2 تا شد، فقط دو تای اول رو نگه دار و ارور بده
         if (combinedFiles.length > 2) {
           setError('حداکثر می‌توانید ۲ ویدیو انتخاب کنید. فایل‌های اضافی نادیده گرفته شدند.');
           return combinedFiles.slice(0, 2);
@@ -47,7 +44,6 @@ export default function NewProjectPage() {
         return combinedFiles;
       });
       
-      // ریست کردن اینپوت تا بتونیم دوباره همون فایل رو در صورت نیاز انتخاب کنیم
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
@@ -57,7 +53,7 @@ export default function NewProjectPage() {
   // 🗑️ حذف یکی از ویدیوهای انتخاب شده
   const handleRemoveVideo = (indexToRemove: number, e: React.MouseEvent) => {
     e.preventDefault(); 
-    e.stopPropagation(); // جلوگیری از باز شدن دوباره پنجره انتخاب فایل
+    e.stopPropagation(); 
     setVideoFiles(videoFiles.filter((_, idx) => idx !== indexToRemove));
   };
 
@@ -79,6 +75,7 @@ export default function NewProjectPage() {
       formData.append('companyName', companyName);
       formData.append('teaserName', teaserName);
       formData.append('description', description);
+      formData.append('category', category); // 👈 ارسال دسته‌بندی به بک‌اند
       formData.append('priority', priority.toString()); 
       
       if (bottomText) {
@@ -90,9 +87,9 @@ export default function NewProjectPage() {
       });
 
       const res = await fetchWithAuth('/projects', {
-  method: 'POST',
-  body: formData, 
-}, 'admin');
+        method: 'POST',
+        body: formData, 
+      }, 'admin');
 
       const data = await res.json();
 
@@ -168,28 +165,59 @@ export default function NewProjectPage() {
           </div>
         </div>
 
-        {/* ----------------- ردیف دوم: اولویت نمایش ----------------- */}
-        <div className="flex flex-col gap-4 relative z-10 border-y border-white/5 py-8 my-2">
-          <div className="flex flex-col gap-1">
-            <label className="text-white text-base font-bold tracking-wide">اولویت نمایش در صفحه نمونه‌کارها</label>
-            <span className="text-white/50 text-xs font-light">شماره ۱ بالاترین جایگاه (ابتدای صفحه) و شماره ۵ پایین‌ترین جایگاه است.</span>
-          </div>
-          <div className="flex items-center gap-3 md:gap-5 flex-wrap">
-            {[1, 2, 3, 4, 5].map((num) => (
-              <button
-                key={num}
-                type="button"
-                onClick={() => setPriority(num)}
-                className={`w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center font-black text-xl md:text-2xl transition-all duration-300 ${outfitFont.className} ${
-                  priority === num 
-                    ? 'bg-white text-black scale-110 shadow-[0_0_30px_rgba(255,255,255,0.4)] border-transparent' 
-                    : 'bg-[#050505] text-white/70 border border-white/10 hover:border-white/40 hover:text-white'
-                }`}
+        {/* ----------------- ردیف دوم: دسته‌بندی و اولویت ----------------- */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 relative z-10 border-y border-white/5 py-8 my-2">
+          
+          {/* انتخاب دسته‌بندی */}
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-1">
+              <label className="text-white text-base font-bold tracking-wide">دسته‌بندی پروژه</label>
+              <span className="text-white/50 text-xs font-light">این پروژه در کدام فیلتر نمایش داده شود؟</span>
+            </div>
+            <div className="relative w-full">
+              <select 
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                className="w-full h-16 px-5 bg-[#050505] border border-white/10 rounded-2xl text-white focus:outline-none focus:border-white/50 focus:bg-[#0a0a0a] transition-all text-base appearance-none cursor-pointer"
               >
-                {num}
-              </button>
-            ))}
+                <option value="teaser">تیزر تبلیغاتی</option>
+                <option value="content">تولید محتوا</option>
+                <option value="product">معرفی محصول</option>
+                <option value="service">معرفی خدمات</option>
+                <option value="campaign">اجرای کمپین</option>
+                <option value="web">طراحی سایت</option>
+              </select>
+              {/* آیکون فلش کاستوم برای Select */}
+              <div className="absolute left-5 top-1/2 -translate-y-1/2 pointer-events-none text-white/50">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </div>
+            </div>
           </div>
+
+          {/* اولویت نمایش */}
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-1">
+              <label className="text-white text-base font-bold tracking-wide">اولویت نمایش در لیست</label>
+              <span className="text-white/50 text-xs font-light">شماره ۱ (بالاترین) و شماره ۵ (پایین‌ترین) جایگاه.</span>
+            </div>
+            <div className="flex items-center gap-3 md:gap-5 flex-wrap">
+              {[1, 2, 3, 4, 5].map((num) => (
+                <button
+                  key={num}
+                  type="button"
+                  onClick={() => setPriority(num)}
+                  className={`w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center font-black text-xl md:text-2xl transition-all duration-300 ${outfitFont.className} ${
+                    priority === num 
+                      ? 'bg-white text-black scale-110 shadow-[0_0_30px_rgba(255,255,255,0.4)] border-transparent' 
+                      : 'bg-[#050505] text-white/70 border border-white/10 hover:border-white/40 hover:text-white'
+                  }`}
+                >
+                  {num}
+                </button>
+              ))}
+            </div>
+          </div>
+
         </div>
 
         {/* ----------------- ردیف سوم: توضیحات ----------------- */}

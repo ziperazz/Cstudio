@@ -12,6 +12,9 @@ import ContactDrawer from '@/components/ContactDrawer';
 import { orbitronFont, outfitFont } from '@/app/fonts';
 
 gsap.registerPlugin(ScrollTrigger);
+// 🚀 رفع لگ اسکرول: جلوگیری از ری‌کلکولیت شدن ScrollTrigger با تغییر ارتفاع نوار آدرس موبایل حین اسکرول
+ScrollTrigger.config({ ignoreMobileResize: true });
+gsap.config({ nullTargetWarn: false });
 
 // 🎛️===================================================================🎛️
 //                   داشبورد تنظیمات اصلی سایت
@@ -283,7 +286,7 @@ const mobWorksRestEase = "power2.out";
 
 // 🎛️ تنظیماتِ بخش درباره ما
 const aboutLabel_Text = "ABOUT US";
-const aboutLabel_FontSize_Desk = "clamp(20px, 1.8vw, 30px)";
+const aboutLabel_FontSize_Desk = "clamp(10px, 0.8vw, 16px)";
 const aboutLabel_X_Desk = "0px";
 const aboutLabel_Y_Desk = "0px";
 const aboutLabel_FontSize_Mob = "0px";
@@ -291,29 +294,29 @@ const aboutLabel_X_Mob = "0px";
 const aboutLabel_Y_Mob = "0px";
 
 const aboutC_Color = "#FFFFFF";
-const aboutC_FontSize_Desk = "clamp(180px, 18vw, 380px)";
-const aboutC_X_Desk = "clamp(10px, 2.3vw, 45px)";                
+const aboutC_FontSize_Desk =  "clamp(120px, 14vw, 350px)";
+const aboutC_X_Desk = "clamp(15px, 2vw, 40px)";           
 const aboutC_Y_Desk = "0px";
 const aboutC_FontSize_Mob = "180px";
 const aboutC_X_Mob = "-12px";    
 const aboutC_Y_Mob = "0px";
 
-const aboutTitle1_FontSize_Desk = "clamp(45px, 6vw, 85px)";
+const aboutTitle1_FontSize_Desk = "clamp(30px, 4vw, 75px)";
 const aboutTitle1_X_Desk = "0px";
 const aboutTitle1_Y_Desk = "0px";
 const aboutTitle1_FontSize_Mob = "55px"; // 🎯 سایز WE ARE تو موبایل بزرگ شد
 const aboutTitle1_X_Mob = "0px"; 
 const aboutTitle1_Y_Mob = "0px";
 
-const aboutTitle2_FontSize_Desk = "clamp(50px, 7vw, 100px)";
+const aboutTitle2_FontSize_Desk = "clamp(32px, 4.5vw, 85px)";
 const aboutTitle2_X_Desk = "0px";
 const aboutTitle2_Y_Desk = "0px";
 const aboutTitle2_FontSize_Mob = "55px"; // 🎯 سایز STUDIO تو موبایل بزرگ شد
 const aboutTitle2_X_Mob = "0px"; 
 const aboutTitle2_Y_Mob = "0px";
 
-const stmt1_FontSize_Desk = "clamp(34px, 6vw, 90px)";
-const stmt1_MarginLeft_Desk = "clamp(2vw, 8vw, 8vw)"; 
+const stmt1_FontSize_Desk = "clamp(24px, 4vw, 70px)";
+const stmt1_MarginLeft_Desk = "clamp(1vw, 5vw, 6vw)";
 const stmt1_X_Desk = "clamp(-50px, -5.2vw, -20px)";       
 const stmt1_Y_Desk = "0px";          
 const stmt1_FontSize_Mob = "42px"; // 🎯 برگشت به 42px
@@ -328,7 +331,7 @@ const stmtPersian_FontSize_Mob = "13px";
 const stmtPersian_X_Mob = "0px";     
 const stmtPersian_Y_Mob = "0px";     
 
-const stmt2_FontSize_Desk = "clamp(28px, 5.5vw, 85px)";
+const stmt2_FontSize_Desk = "clamp(20px, 3.5vw, 60px)";
 const stmt2_X_Desk = "clamp(-50px, -5.2vw, -20px)";        
 const stmt2_Y_Desk = "0px";          
 const stmt2_FontSize_Mob = "38px"; // 🎯 برگشت به 38px
@@ -344,12 +347,12 @@ const worksBoxesConfig = [
 ];
 
 const servicesBentoData = [
-  { num: "01", fa: "تیزر تبلیغاتی", en: "COMMERCIAL", col: "md:col-span-2", row: "md:row-span-2", video: "/k1.mp4", poster: "/poster1.jpg", desc: "خلق ویدیوهای سینمایی و مفهومی با کیفیت تصویر فوق‌العاده" },
-  { num: "02", fa: "تولید محتوا", en: "CONTENT", col: "md:col-span-1", row: "md:row-span-1", video: "/k2.mp4", poster: "/poster2.jpg", desc: "استراتژی محتوای وایرال" }, 
-  { num: "03", fa: "معرفی محصول", en: "PRODUCT", col: "md:col-span-1", row: "md:row-span-2", video: "/k3.mp4", poster: "/poster3.jpg", desc: "نمایش ۳ بعدی استودیویی" }, 
-  { num: "04", fa: "معرفی خدمات", en: "SERVICE", col: "md:col-span-1", row: "md:row-span-1", video: "/k4.mp4", poster: "/poster4.jpg", desc: "روایت جذاب داستان برند شما" }, 
-  { num: "05", fa: "اجرای کمپین", en: "CAMPAIGN", col: "md:col-span-2", row: "md:row-span-1", video: "/k5.mp4", poster: "/poster5.jpg", desc: "طراحی کمپین‌های تبلیغاتی ۳۶۰ درجه برای انفجار فروش" },
-  { num: "06", fa: "طراحی سایت", en: "WEB DESIGN", col: "md:col-span-2", row: "md:row-span-1", video: "/k6.mp4", poster: "/poster6.jpg", desc: "توسعه وب‌سایت‌های سفارشی با تعاملات مشابه Awwwards" },
+  { num: "01", fa: "تیزر تبلیغاتی", category: "teaser", en: "COMMERCIAL", col: "md:col-span-2", row: "md:row-span-2", video: "/k1.mp4", poster: "/poster1.png", desc: "خلق ویدیوهای سینمایی و مفهومی با کیفیت تصویر فوق‌العاده" },
+  { num: "02", fa: "تولید محتوا", category: "content", en: "CONTENT", col: "md:col-span-1", row: "md:row-span-1", video: "/k2.mp4", poster: "/poster2.png", desc: "استراتژی محتوای وایرال" }, 
+  { num: "03", fa: "معرفی محصول", category: "product", en: "PRODUCT", col: "md:col-span-1", row: "md:row-span-2", video: "/k3.mp4", poster: "/poster3.png", desc: "نمایش ۳ بعدی استودیویی" }, 
+  { num: "04", fa: "معرفی خدمات", category: "service", en: "SERVICE", col: "md:col-span-1", row: "md:row-span-1", video: "/k4.mp4", poster: "/poster4.png", desc: "روایت جذاب داستان برند شما" }, 
+  { num: "05", fa: "اجرای کمپین", category: "campaign", en: "CAMPAIGN", col: "md:col-span-2", row: "md:row-span-1", video: "/k5.mp4", poster: "/poster5.png", desc: "طراحی کمپین‌های تبلیغاتی ۳۶۰ درجه برای انفجار فروش" },
+  { num: "06", fa: "طراحی سایت", category: "web", en: "WEB DESIGN", col: "md:col-span-2", row: "md:row-span-1", video: "/k6.mp4", poster: "/poster6.png", desc: "توسعه وب‌سایت‌های سفارشی با تعاملات مشابه Awwwards" },
 ];
 
 function HeroTunerPanel({
@@ -441,10 +444,22 @@ export default function Page() {
   const aboutNewSectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth);
+    // 🚀 رفع لگ اسکرول: throttle کردن resize با requestAnimationFrame تا هنگام اسکرول موبایل
+    // (که خود مرورگر با مخفی/ظاهر شدن نوار آدرس رویداد resize پشت‌سرهم می‌فرستد) ری‌رندرهای اضافه ایجاد نشود
+    let rafId: number | null = null;
+    const handleResize = () => {
+      if (rafId !== null) return;
+      rafId = requestAnimationFrame(() => {
+        setWindowWidth(window.innerWidth);
+        rafId = null;
+      });
+    };
     handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener('resize', handleResize, { passive: true });
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      if (rafId !== null) cancelAnimationFrame(rafId);
+    };
   }, []);
 
   useEffect(() => {
@@ -464,7 +479,7 @@ export default function Page() {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const res = await fetch(`https://cstudio.ir/api/projects`)
+        const res = await fetch(`http://localhost:5000/api/projects`)
         const data = await res.json();
         if (data.success && data.data) {
           setProjectsData(data.data.slice(0, 5)); 
@@ -476,6 +491,27 @@ export default function Page() {
     fetchProjects();
   }, []);
 
+  // 🚀 ویدیوهای تزئینی CSTD فقط وقتی در دید کاربر هستند پخش شوند.
+  // Services کنترل پخش جداگانه دارد تا شروع decode/play با انیمیشن ورود همزمان نشود.
+  useEffect(() => {
+    const videos = Array.from(document.querySelectorAll('video[data-lazyplay]')) as HTMLVideoElement[];
+    if (videos.length === 0) return;
+
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        const video = entry.target as HTMLVideoElement;
+        if (entry.isIntersecting) {
+          video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      });
+    }, { threshold: 0.15 });
+
+    videos.forEach((v) => io.observe(v));
+    return () => io.disconnect();
+  }, []);
+
   // 🎯 گرفتن دیتای واقعی با مدیریت ایمن
   const getProjectData = (index: number) => {
     const p = projectsData[index];
@@ -485,7 +521,7 @@ export default function Page() {
     }
     
     const videoUrl = p.videos && p.videos.length > 0 
-      ? `https://cstudio.ir${p.videos[0]}`
+      ? `http://localhost:5000${p.videos[0]}`
       : null;
 
     return {
@@ -558,7 +594,61 @@ gsap.fromTo(maskRef.current, { scale: 1.01 }, { scale: 1, duration: 1.4, ease: "
           }
           if (bentoSectionRef.current && verticalTextParentRef.current) {
             gsap.fromTo(verticalTextParentRef.current, { x: -250, opacity: 0 }, { x: 0, opacity: 1, duration: bentoAnimDuration, ease: "power3.out", scrollTrigger: { trigger: bentoSectionRef.current, start: bentoRevealStart, toggleActions: "play none none reverse" } });
-            gsap.fromTo(".bento-grid-wrapper", { x: bentoEntranceDistance, opacity: 0 }, { x: 0, opacity: 1, duration: bentoAnimDuration, ease: "power3.out", scrollTrigger: { trigger: bentoSectionRef.current, start: bentoRevealStart, toggleActions: "play none none reverse" } });
+
+            const serviceVideos = gsap.utils.toArray('video[data-services-video]', bentoSectionRef.current) as HTMLVideoElement[];
+            const servicePreviews = gsap.utils.toArray('[data-services-preview]', bentoSectionRef.current) as HTMLElement[];
+            const serviceVideoPlayTimers: number[] = [];
+            const clearServiceVideoTimers = () => {
+              while (serviceVideoPlayTimers.length) {
+                const timerId = serviceVideoPlayTimers.pop();
+                if (timerId !== undefined) window.clearTimeout(timerId);
+              }
+            };
+            const resetServicesMedia = () => {
+              servicePreviews.forEach((preview) => { preview.style.opacity = '1'; });
+              serviceVideos.forEach((video) => {
+                video.pause();
+                video.currentTime = 0;
+                video.style.opacity = '0';
+              });
+            };
+
+            resetServicesMedia();
+
+            gsap.fromTo(".bento-grid-wrapper", { x: bentoEntranceDistance, opacity: 0 }, {
+              x: 0,
+              opacity: 1,
+              duration: bentoAnimDuration,
+              ease: "power3.out",
+              scrollTrigger: {
+                trigger: bentoSectionRef.current,
+                start: bentoRevealStart,
+                toggleActions: "play none none reverse",
+                onEnter: () => {
+                  clearServiceVideoTimers();
+                  resetServicesMedia();
+                },
+                onLeaveBack: () => {
+                  clearServiceVideoTimers();
+                  resetServicesMedia();
+                }
+              },
+              onComplete: () => {
+                clearServiceVideoTimers();
+                serviceVideos.forEach((video, index) => {
+                  const timer = window.setTimeout(() => {
+                    const preview = servicePreviews[index];
+                    if (preview) preview.style.opacity = '0';
+                    video.style.opacity = '0.8';
+                    video.play().catch(() => {
+                      video.style.opacity = '0';
+                      if (preview) preview.style.opacity = '1';
+                    });
+                  }, index * 90);
+                  serviceVideoPlayTimers.push(timer);
+                });
+              }
+            });
           }
           if (worksSectionRef.current && worksTextRef.current && worksBoxesWrapperRef.current && footerText1Ref.current && footerText2Ref.current) {
             gsap.fromTo(worksTextRef.current, { x: worksWordEntranceDist, opacity: 0 }, { x: 0, opacity: 1, duration: worksAnimDuration, ease: worksAnimEase, scrollTrigger: { trigger: worksSectionRef.current, start: worksAnimStart, toggleActions: worksAnimToggleActions } });
@@ -842,6 +932,13 @@ gsap.fromTo(maskRef.current, { scale: 1.01 }, { scale: 1, duration: 1.4, ease: "
         .hero-tuner__label input[type="number"] { width: 64px; background: #1c1c1c; border: 1px solid #3a3a3a; color: #fff; border-radius: 5px; padding: 2px 6px; font-size: 11px; text-align: center; direction: ltr; }
         .hero-tuner__row input[type="range"] { width: 100%; accent-color: #fff; direction: ltr; }
 
+        /* 🚀 رفع لگ اسکرول: هینت GPU برای المان‌هایی که با GSAP/ScrollTrigger جابجا می‌شوند */
+        .gsap-gpu, .slider-x, .slider-y, .mobile-service-elements, .mobile-work-elements,
+        .mobile-services-text, .mobile-works-text, .about-scrub-line-inner,
+        .about-anim-img, .about-anim-img img {
+          will-change: transform, opacity;
+        }
+
         .works-footer-container { margin-top: ${mobWorksFooterMarginTop}; margin-bottom: clamp(150px, 20vh, 250px); }
         .works-footer-text { font-size: ${mobWorksFooterFontSize}; letter-spacing: ${mobWorksFooterLetterSpacing}; }
         .works-footer-gap { margin-top: ${mobWorksFooterGap}; }
@@ -1011,7 +1108,7 @@ gsap.fromTo(maskRef.current, { scale: 1.01 }, { scale: 1, duration: 1.4, ease: "
       <section ref={heroRef} className="hero antialiased" dir="ltr" style={liveHeroVars}>
         <div className="hero__media">
           <video autoPlay loop muted playsInline poster="/poster.jpg">
-            <source src="/hero.mp4" type="video/mp4" />
+            <source src="/hero-animation.mp4" type="video/mp4" />
           </video>
         </div>
         <div ref={blackOverlayRef} className="hero__blackout" />
@@ -1044,7 +1141,7 @@ gsap.fromTo(maskRef.current, { scale: 1.01 }, { scale: 1, duration: 1.4, ease: "
 
       <section id="cstd-section" ref={bbdoSectionRef} className="relative w-full text-white overflow-hidden z-20 transform-gpu -mt-[1px]" style={{ backgroundColor: solidBlackColor }} dir="ltr">
         <div className="hidden md:flex w-full min-h-screen max-w-[1920px] mx-auto items-center relative overflow-hidden">
-          <div ref={textRevealRef} className="absolute z-20 flex flex-col gap-8 opacity-0" style={{ fontFamily: persianFontFamily, width: cstdSmallTextWidth }} dir="rtl">
+          <div ref={textRevealRef} className="gsap-gpu absolute z-20 flex flex-col gap-8 opacity-0" style={{ fontFamily: persianFontFamily, width: cstdSmallTextWidth }} dir="rtl">
             <p className="leading-relaxed font-light text-zinc-300 text-justify" style={{ fontSize: cstdSmallTextFontSize }}>
               ما برای ساختن برندهایی خلق می‌کنیم که فراموش نشوند. <br /><br />
               ما با کسب‌وکارها و برندهایی همکاری می‌کنیم که به دنبال رشد، تفاوت و تأثیرگذاری هستند. <br /><br />
@@ -1065,18 +1162,18 @@ gsap.fromTo(maskRef.current, { scale: 1.01 }, { scale: 1, duration: 1.4, ease: "
             </button>
           </div>
 
-          <div ref={mainTextRef} className="absolute z-10 flex flex-col justify-between whitespace-nowrap uppercase tracking-tighter" style={{ width: blockWidthX, height: blockHeightY, fontSize: cstdMainFontSize, fontWeight: cstdFontWeight, lineHeight: cstdLineHeight, color: cstdFontColor, letterSpacing: '-0.02em', fontFamily: cstdFontFamily }}>
+          <div ref={mainTextRef} className="gsap-gpu absolute z-10 flex flex-col justify-between whitespace-nowrap uppercase tracking-tighter" style={{ width: blockWidthX, height: blockHeightY, fontSize: cstdMainFontSize, fontWeight: cstdFontWeight, lineHeight: cstdLineHeight, color: cstdFontColor, letterSpacing: '-0.02em', fontFamily: cstdFontFamily }}>
             <div className="flex items-center justify-between w-full" style={{ gap: cstdVideoWordGap }}>
               <div className="flex items-center" style={{ gap: cstdWordGap }}><span className="leading-none">WE</span><span className="leading-none">ARE</span></div>
-              <div className="overflow-hidden bg-zinc-800" style={{ width: cstdVideoWidth1, height: cstdVideoHeight, borderRadius: cstdVideoRadius }}><video autoPlay loop muted playsInline poster="/c1-poster.jpg" className="w-full h-full object-cover"><source src="/c1.mp4" type="video/mp4" /></video></div>
+              <div className="overflow-hidden bg-zinc-800" style={{ width: cstdVideoWidth1, height: cstdVideoHeight, borderRadius: cstdVideoRadius }}><video data-lazyplay loop muted playsInline poster="/c1-poster.jpg" className="w-full h-full object-cover"><source src="/c1.mp4" type="video/mp4" /></video></div>
             </div>
             <div className="flex items-center justify-between w-full" style={{ gap: cstdVideoWordGap }}>
-              <div className="overflow-hidden bg-zinc-800" style={{ width: cstdVideoWidth2, height: cstdVideoHeight, borderRadius: cstdVideoRadius }}><video autoPlay loop muted playsInline poster="/c3-poster.jpg" className="w-full h-full object-cover"><source src="/c3.mp4" type="video/mp4" /></video></div>
+              <div className="overflow-hidden bg-zinc-800" style={{ width: cstdVideoWidth2, height: cstdVideoHeight, borderRadius: cstdVideoRadius }}><video data-lazyplay loop muted playsInline poster="/c3-poster.jpg" className="w-full h-full object-cover"><source src="/c3.mp4" type="video/mp4" /></video></div>
               <span className="leading-none">C studio</span>
             </div>
             <div className="flex items-center justify-between w-full" style={{ gap: cstdVideoWordGap }}>
               <span className="leading-none">WE</span>
-              <div className="overflow-hidden bg-zinc-800" style={{ width: cstdVideoWidth3, height: cstdVideoHeight, borderRadius: cstdVideoRadius }}><video autoPlay loop muted playsInline poster="/c2-poster.jpg" className="w-full h-full object-cover"><source src="/c2.mp4" type="video/mp4" /></video></div>
+              <div className="overflow-hidden bg-zinc-800" style={{ width: cstdVideoWidth3, height: cstdVideoHeight, borderRadius: cstdVideoRadius }}><video data-lazyplay loop muted playsInline poster="/c2-poster.jpg" className="w-full h-full object-cover"><source src="/c2.mp4" type="video/mp4" /></video></div>
               <span className="leading-none">DO</span>
             </div>
             <div className="flex items-center justify-between w-full"><span className="leading-none">BIG</span><span className="leading-none">THINGS</span></div>
@@ -1087,14 +1184,14 @@ gsap.fromTo(maskRef.current, { scale: 1.01 }, { scale: 1, duration: 1.4, ease: "
           <div className="flex flex-col items-center w-full uppercase tracking-tighter" style={{ fontSize: mobCstdMainFontSize, fontWeight: cstdFontWeight, lineHeight: "1.15", color: cstdFontColor, letterSpacing: '-0.02em', fontFamily: cstdFontFamily }}>
             <div className="flex justify-center items-center gap-3 w-full whitespace-nowrap">
               <span>WE ARE</span>
-              <div className="overflow-hidden bg-zinc-800" style={{ width: mobCstdVideoWidth1, height: mobCstdVideoHeight, borderRadius: mobCstdVideoRadius }}><video autoPlay loop muted playsInline poster="/c1-poster.jpg" className="w-full h-full object-cover"><source src="/c1.mp4" type="video/mp4" /></video></div>
+              <div className="overflow-hidden bg-zinc-800" style={{ width: mobCstdVideoWidth1, height: mobCstdVideoHeight, borderRadius: mobCstdVideoRadius }}><video data-lazyplay loop muted playsInline poster="/c1-poster.jpg" className="w-full h-full object-cover"><source src="/c1.mp4" type="video/mp4" /></video></div>
             </div>
             <div className="flex justify-center items-center gap-3 w-full whitespace-nowrap mt-1">
-              <div className="overflow-hidden bg-zinc-800" style={{ width: mobCstdVideoWidth2, height: mobCstdVideoHeight, borderRadius: mobCstdVideoRadius }}><video autoPlay loop muted playsInline poster="/c3-poster.jpg" className="w-full h-full object-cover"><source src="/c3.mp4" type="video/mp4" /></video></div>
+              <div className="overflow-hidden bg-zinc-800" style={{ width: mobCstdVideoWidth2, height: mobCstdVideoHeight, borderRadius: mobCstdVideoRadius }}><video data-lazyplay loop muted playsInline poster="/c3-poster.jpg" className="w-full h-full object-cover"><source src="/c3.mp4" type="video/mp4" /></video></div>
               <span>C STUDIO</span>
             </div>
             <div className="flex justify-center items-center gap-3 w-full whitespace-nowrap mt-1">
-              <div className="overflow-hidden bg-zinc-800" style={{ width: mobCstdVideoWidth3, height: mobCstdVideoHeight, borderRadius: mobCstdVideoRadius }}><video autoPlay loop muted playsInline poster="/c2-poster.jpg" className="w-full h-full object-cover"><source src="/c2.mp4" type="video/mp4" /></video></div>
+              <div className="overflow-hidden bg-zinc-800" style={{ width: mobCstdVideoWidth3, height: mobCstdVideoHeight, borderRadius: mobCstdVideoRadius }}><video data-lazyplay loop muted playsInline poster="/c2-poster.jpg" className="w-full h-full object-cover"><source src="/c2.mp4" type="video/mp4" /></video></div>
               <span>WE DO BIG</span>
             </div>
             <div className="flex justify-center items-center w-full whitespace-nowrap mt-1"><span>THINGS</span></div>
@@ -1121,15 +1218,16 @@ gsap.fromTo(maskRef.current, { scale: 1.01 }, { scale: 1, duration: 1.4, ease: "
 
       <section id="services-section" ref={bentoSectionRef} className="relative w-full text-white overflow-hidden z-20 transform-gpu" dir="rtl" style={{ backgroundColor: "#111111", fontFamily: persianFontFamily }}>
         <div className="hidden md:flex flex-col items-center justify-center w-full min-h-screen" style={{ paddingTop: bentoPaddingY, paddingBottom: bentoPaddingY }}>
-          <div ref={verticalTextParentRef} className="absolute pointer-events-none z-0 opacity-0" style={{ left: servicesTitleOffsetX }}>
+          <div ref={verticalTextParentRef} className="gsap-gpu absolute pointer-events-none z-0 opacity-0" style={{ left: servicesTitleOffsetX }}>
             <span className="block font-black tracking-widest uppercase select-none drop-shadow-lg" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', color: '#d1d1d1', fontSize: servicesTextFontSize, fontFamily: englishFontFamily }}>SERVICES</span>
           </div>
-          <div className="bento-grid-wrapper relative z-10 mx-auto px-6 md:pr-12 w-full opacity-0" style={{ transform: `scale(${servicesGridScale})`, paddingLeft: 'clamp(64px, 6.25vw, 120px)', maxWidth: 'min(1600px, 82vw)' }}>
+          <div className="gsap-gpu bento-grid-wrapper relative z-10 mx-auto px-6 md:pr-12 w-full opacity-0" style={{ transform: `scale(${servicesGridScale})`, paddingLeft: 'clamp(64px, 6.25vw, 120px)', maxWidth: 'min(1600px, 82vw)' }}>
             <div className="grid grid-cols-1 md:grid-cols-4" style={{ gap: servicesGridGap, gridAutoRows: servicesBoxBaseHeight }}>
               {servicesBentoData.map((item, idx) => (
-                <div key={idx} onMouseEnter={() => setHoveredBento(idx)} onMouseLeave={() => setHoveredBento(null)} className={`relative group overflow-hidden rounded-[24px] bg-white/[0.03] backdrop-blur-xl border border-white/10 transition-colors duration-500 hover:border-white/20 cursor-pointer ${item.col} ${item.row}`}>
-                  <video src={item.video} poster={item.poster} autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover" style={{ transform: hoveredBento === idx ? `scale(${bentoVideoHoverScale})` : 'scale(1)', transition: 'transform 0.7s cubic-bezier(0.25, 1, 0.5, 1)', opacity: 0.8 }} />
-                  <div className="absolute inset-0 transition-all duration-500" style={{ backgroundColor: hoveredBento === idx ? `rgba(0,0,0,${servicesOverlayHoverOpacity})` : `rgba(0,0,0,${servicesOverlayOpacity})`, backdropFilter: hoveredBento === idx ? 'blur(0px)' : 'blur(2px)' }} />
+                <Link href={`/works?category=${encodeURIComponent(item.category)}`} key={idx} onMouseEnter={() => setHoveredBento(idx)} onMouseLeave={() => setHoveredBento(null)} className={`relative group overflow-hidden rounded-[24px] bg-white/[0.03] backdrop-blur-xl border border-white/10 transition-colors duration-500 hover:border-white/20 cursor-pointer ${item.col} ${item.row}`}>
+                  <img data-services-preview src={item.poster} alt="" aria-hidden="true" className="absolute inset-0 z-[1] w-full h-full object-cover pointer-events-none transition-opacity duration-150" />
+                  <video data-services-video src={item.video} preload="none" loop muted playsInline className="absolute inset-0 z-0 w-full h-full object-cover opacity-0" style={{ transform: hoveredBento === idx ? `scale(${bentoVideoHoverScale})` : 'scale(1)', transition: 'transform 0.7s cubic-bezier(0.25, 1, 0.5, 1)', opacity: 0 }} />
+                  <div className="absolute inset-0 z-[2] transition-all duration-500" style={{ backgroundColor: hoveredBento === idx ? `rgba(0,0,0,${servicesOverlayHoverOpacity})` : `rgba(0,0,0,${servicesOverlayOpacity})`, backdropFilter: 'none' }} />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent opacity-80 group-hover:opacity-60 transition-opacity duration-500" />
                   <div className="relative z-10 flex flex-col justify-between h-full p-6 md:p-8 pointer-events-none">
                     <div className="flex justify-between items-start w-full"><span className="text-xl md:text-2xl text-white/50 group-hover:text-white transition-colors duration-500" dir="ltr" style={{ fontFamily: englishFontFamily }}>{item.num}</span></div>
@@ -1138,7 +1236,7 @@ gsap.fromTo(maskRef.current, { scale: 1.01 }, { scale: 1, duration: 1.4, ease: "
                       <p className="absolute left-0 right-0 bottom-0 text-zinc-300 font-light text-sm md:text-base opacity-0 translate-y-8 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] leading-relaxed">{item.desc}</p>
                     </div>
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
           </div>
@@ -1153,15 +1251,15 @@ gsap.fromTo(maskRef.current, { scale: 1.01 }, { scale: 1, duration: 1.4, ease: "
                     <span className="block font-black uppercase select-none drop-shadow-2xl" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', color: mobServiceTextColor, fontSize: mobServiceTextFontSize, letterSpacing: mobServiceTextLetterSpacing, fontFamily: englishFontFamily }}>{mobServiceTextWord}</span>
                   </div>
                 )}
-                <div className="w-full relative overflow-hidden rounded-[24px] bg-white/[0.03] backdrop-blur-xl border border-white/10 shadow-2xl" style={{ height: mobServiceBoxHeight }}>
-                  <video src={item.video} poster={item.poster} autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover opacity-80" />
+                <Link href={`/works?category=${encodeURIComponent(item.category)}`} className="w-full relative overflow-hidden rounded-[24px] bg-white/[0.03] backdrop-blur-xl border border-white/10 shadow-2xl block" style={{ height: mobServiceBoxHeight }}>
+                  <video data-lazyplay src={item.video} poster={item.poster} loop muted playsInline className="absolute inset-0 w-full h-full object-cover opacity-80" />
                   <div className="absolute inset-0 bg-black/30" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent opacity-80" />
                   <div className="relative z-10 flex flex-col justify-between h-full p-8 pointer-events-none" dir="rtl">
                     <div className="flex justify-between items-start w-full"><span className="text-xl text-white font-mono" dir="ltr">{item.num}</span></div>
                     <div className="w-full"><h3 className="text-2xl font-bold text-white mb-2">{item.fa}</h3><p className="text-zinc-300 font-light text-sm leading-relaxed">{item.desc}</p></div>
                   </div>
-                </div>
+                </Link>
               </div>
             </div>
           ))}
@@ -1171,10 +1269,10 @@ gsap.fromTo(maskRef.current, { scale: 1.01 }, { scale: 1, duration: 1.4, ease: "
       <section id="works-section" ref={worksSectionRef} className="relative w-full min-h-screen text-white overflow-hidden z-20 flex flex-col items-center" dir="rtl" style={{ backgroundColor: worksBgColor, fontFamily: persianFontFamily }}>
         <div className="works-desktop-shell hidden md:flex relative w-full items-start justify-center" style={{ paddingTop: worksPaddingY, paddingBottom: worksPaddingY, paddingLeft: 'clamp(40px, 5vw, 100px)', paddingRight: 'clamp(40px, 5vw, 100px)' }}>
           <div className="works-boxes-wrap relative flex-1 flex flex-col w-full" style={{ maxWidth: '1700px' }}>
-              <div ref={worksTextRef} className="absolute top-0 right-0 flex items-start select-none z-10 opacity-0" style={{ width: worksWordSize, transform: `translate(${worksTitleOffsetX}, ${worksTitleOffsetY})` }}>
+              <div ref={worksTextRef} className="gsap-gpu absolute top-0 right-0 flex items-start select-none z-10 opacity-0" style={{ width: worksWordSize, transform: `translate(${worksTitleOffsetX}, ${worksTitleOffsetY})` }}>
                   <span className="block font-black uppercase tracking-widest drop-shadow-2xl" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', color: worksWordColor, fontSize: worksWordSize, lineHeight: '1', fontFamily: englishFontFamily }}>{worksWordText}</span>
               </div>
-              <div ref={worksBoxesWrapperRef} className="flex flex-col w-full opacity-0 origin-top" style={{ transform: `scale(${worksBoxGlobalScale})` }}>
+              <div ref={worksBoxesWrapperRef} className="gsap-gpu flex flex-col w-full opacity-0 origin-top" style={{ transform: `scale(${worksBoxGlobalScale})` }}>
                   <div className="flex w-full justify-end">
                       <div className="flex flex-row" style={{ width: `calc(100% - ${worksWordSize} - ${worksWordGap})`, gap: worksColGap }}>
                           
@@ -1352,8 +1450,8 @@ gsap.fromTo(maskRef.current, { scale: 1.01 }, { scale: 1, duration: 1.4, ease: "
         </div>
 
         <div className="works-footer-container w-full flex flex-col items-center overflow-hidden relative z-10">
-          <div ref={footerText1Ref} className="works-footer-text font-black whitespace-nowrap uppercase leading-none text-white opacity-0 text-center select-none" style={{ fontFamily: englishFontFamily }}>{worksFooterText}</div>
-          <div ref={footerText2Ref} className="works-footer-text works-footer-gap font-black whitespace-nowrap uppercase leading-none opacity-0 text-center select-none" style={{ fontFamily: englishFontFamily, color: "#000000", mixBlendMode: "screen", textShadow: `-2px -2px 0 ${worksFooterStrokeColor}, 2px -2px 0 ${worksFooterStrokeColor}, -2px  2px 0 ${worksFooterStrokeColor}, 2px  2px 0 ${worksFooterStrokeColor}, 0px -2px 0 ${worksFooterStrokeColor}, 0px  2px 0 ${worksFooterStrokeColor}, -2px  0px 0 ${worksFooterStrokeColor}, 2px  0px 0 ${worksFooterStrokeColor}` }}>{worksFooterText}</div>
+          <div ref={footerText1Ref} className="gsap-gpu works-footer-text font-black whitespace-nowrap uppercase leading-none text-white opacity-0 text-center select-none" style={{ fontFamily: englishFontFamily }}>{worksFooterText}</div>
+          <div ref={footerText2Ref} className="gsap-gpu works-footer-text works-footer-gap font-black whitespace-nowrap uppercase leading-none opacity-0 text-center select-none" style={{ fontFamily: englishFontFamily, color: "#000000", mixBlendMode: "screen", textShadow: `-2px -2px 0 ${worksFooterStrokeColor}, 2px -2px 0 ${worksFooterStrokeColor}, -2px  2px 0 ${worksFooterStrokeColor}, 2px  2px 0 ${worksFooterStrokeColor}, 0px -2px 0 ${worksFooterStrokeColor}, 0px  2px 0 ${worksFooterStrokeColor}, -2px  0px 0 ${worksFooterStrokeColor}, 2px  0px 0 ${worksFooterStrokeColor}` }}>{worksFooterText}</div>
         </div>
       </section>
 
@@ -1379,7 +1477,7 @@ gsap.fromTo(maskRef.current, { scale: 1.01 }, { scale: 1, duration: 1.4, ease: "
             <div className="about-top-anim mt-7 -ml-[5px] [writing-mode:vertical-rl] rotate-180 text-[10px] tracking-[0.3em] text-zinc-500 font-medium" style={{ fontFamily: englishFontFamily }}>CREATIVE STUDIO</div>
           </div>
 
-          <div className="mx-auto grid max-w-[1300px] grid-cols-1 gap-8 md:gap-12 pt-[80px] lg:grid-cols-[45%_55%]">
+          <div className="mx-auto grid w-full lg:w-[75vw] max-w-[1600px] grid-cols-1 gap-6 md:gap-10 pt-[60px] lg:grid-cols-[45%_55%]">
             <div className="flex flex-col items-center md:items-start w-full text-center md:text-left gap-2 md:gap-4">
               <h2 className="about-top-anim font-bold tracking-[0.22em] leading-none text-[#f2f2f2]" style={{ fontFamily: englishFontFamily }}><span className="about-t1-custom">WE ARE</span></h2>
               <div className="w-full flex justify-center md:justify-start"><div className="about-top-anim about-c-custom font-black leading-[0.72] tracking-[-0.1em]" style={{ fontFamily: cstdFontFamily, color: aboutC_Color }}>C</div></div>
@@ -1387,7 +1485,7 @@ gsap.fromTo(maskRef.current, { scale: 1.01 }, { scale: 1, duration: 1.4, ease: "
             </div>
             
             <div dir="rtl" className="flex flex-col justify-start mt-10 lg:mt-0 text-right">
-              <div className="about-top-anim w-full mb-4 md:mb-8" dir="ltr" style={{ textAlign: 'right' }}>
+              <div className="about-top-anim w-full mb-4 md:mb-8" dir="ltr" style={{ textAlign: 'right', transform: 'translateX(10px)' }}>
                 <span className="tracking-[0.3em] text-zinc-400 font-medium text-[clamp(28px,3.5vw,50px)]" style={{ fontFamily: englishFontFamily }}>
                   ABOUT US
                 </span>
@@ -1413,7 +1511,7 @@ gsap.fromTo(maskRef.current, { scale: 1.01 }, { scale: 1, duration: 1.4, ease: "
           <div className="flex flex-col lg:flex-row justify-between items-end gap-12 lg:gap-8">
             <div className="flex flex-col w-full lg:w-[65%]">
               <div className="stmt1-custom">
-                <h2 className="about-stmt-gsap font-bold leading-[1.12] tracking-[-0.04em] text-[#f2f2f2]" style={{ fontFamily: englishFontFamily }}>WE DON’T JUST<br />MAKE THINGS<br />LOOK GOOD.</h2>
+                <h2 className="about-stmt-gsap font-bold leading-[1.12] tracking-[-0.04em] text-[#f2f2f2]" style={{ fontFamily: englishFontFamily }}>WE DON’T JUST<br />MAKE THINGS<br />LOOK GOOD</h2>
               </div>
               
               <div className="flex flex-col md:flex-row justify-between items-start md:items-end mt-12 md:mt-20 gap-8 md:gap-0 w-full">
@@ -1434,11 +1532,17 @@ gsap.fromTo(maskRef.current, { scale: 1.01 }, { scale: 1, duration: 1.4, ease: "
               </div>
 
             </div>
-            <div className="about-anim-img w-full sm:w-[80%] md:w-[60%] lg:w-[32vw] max-w-[550px] h-[400px] lg:h-[480px] overflow-hidden self-center lg:self-end mt-12 lg:mt-0 relative rounded-md cursor-pointer group">
-              <div className="absolute inset-0 w-full h-full transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:scale-[1.03]">
-                <img src="/AB.jpg" alt="C Studio" className="absolute inset-0 h-full w-full object-cover scale-110" style={{ filter: 'grayscale(100%)' }} />
-              </div>
-            </div>
+            <div className="about-anim-img w-full sm:w-[80%] md:w-[60%] lg:w-[28vw] max-w-[500px] h-[380px] lg:h-[420px] overflow-hidden self-center lg:self-end mt-12 lg:mt-0 relative rounded-xl cursor-pointer group">
+  <div 
+    className="absolute inset-0 w-full h-full transition-transform duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:scale-[1.03]"
+    style={{ 
+      backgroundImage: 'url("/AB.jpg")',
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      filter: 'grayscale(100%)'
+    }}
+  />
+</div>
           </div>
         </div>
 

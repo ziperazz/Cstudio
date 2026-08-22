@@ -1,7 +1,6 @@
 node_modules/
 .next/
 uploads/videos/
-*.mp4
 *.zip
 .env
 .env.local

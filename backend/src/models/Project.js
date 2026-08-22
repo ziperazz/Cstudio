@@ -24,7 +24,13 @@ const projectSchema = new mongoose.Schema({
         type: String,
         trim: true
     },
-    // 🚀 فیلد اولویت اضافه شد (۱ بالاترین، ۵ پایین‌ترین)
+    // 🚀 فیلد دسته‌بندی اضافه شد
+    category: {
+        type: String,
+        required: true,
+        enum: ['teaser', 'content', 'product', 'service', 'campaign', 'web'],
+        default: 'teaser'
+    },
     priority: {
         type: Number,
         required: true,

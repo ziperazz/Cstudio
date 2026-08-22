@@ -9,6 +9,7 @@ const authRoutes = require('./routes/authRoutes');
 const projectRoutes = require('./routes/projectRoutes');
 const userRoutes = require('./routes/userRoutes');
 const clientFolderRoutes = require('./routes/clientFolderRoutes');
+const mediaRoutes = require('./routes/mediaRoutes');
 
 const app = express();
 
@@ -23,7 +24,7 @@ app.use(helmet({
 
 // CORS
 app.use(cors({
-    origin: ['http://cstudio.ir', 'https://cstudio.ir', 'http://www.cstudio.ir', 'https://www.cstudio.ir', 'http://localhost:3030', 'http://78.157.51.136:3030'],
+    origin: ['http://cstudio.ir', 'https://cstudio.ir', 'http://www.cstudio.ir', 'https://www.cstudio.ir', 'http://localhost:3000', 'http://localhost:3030', 'http://78.157.51.136:3030'],
     credentials: true,
 }));
 
@@ -40,6 +41,7 @@ app.use('/api/projects', projectRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/contact', require('./routes/contactRoutes'));
 app.use('/api/client-folders', clientFolderRoutes);
+app.use('/api/media', mediaRoutes);
 
 // Error Handler
 app.use((err, req, res, next) => {

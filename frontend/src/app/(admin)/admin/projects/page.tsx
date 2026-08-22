@@ -8,8 +8,6 @@ import { fetchWithAuth } from '@/utils/api';
 // 🎯 وارد کردن فونت‌ها
 import { orbitronFont, outfitFont } from '@/app/fonts';
 
-
-
 const persianFontFamily = '"AzarMehr", "OpenAI Sans", sans-serif';
 
 // 🎯 تابع تبدیل اعداد انگلیسی به فارسی
@@ -19,6 +17,16 @@ const toPersianDigits = (num: number | string) => {
   return num.toString().replace(/[0-9]/g, (char) => persianNumbers[parseInt(char)]);
 };
 
+// 🎯 مپ کردن آیدی دسته‌بندی‌ها به نام فارسی برای نمایش در لیست
+const categoryMap: { [key: string]: string } = {
+  'teaser': 'تیزر تبلیغاتی',
+  'content': 'تولید محتوا',
+  'product': 'معرفی محصول',
+  'service': 'معرفی خدمات',
+  'campaign': 'اجرای کمپین',
+  'web': 'طراحی سایت'
+};
+
 interface Project {
   _id: string;
   companyName: string;
@@ -26,6 +34,7 @@ interface Project {
   slug: string;
   description: string;
   bottomText?: string;
+  category?: string; // 👈 اضافه شدن دسته‌بندی
   priority?: number; 
   videos: string[];
   createdAt: string;
@@ -47,6 +56,7 @@ export default function ProjectsListPage() {
     teaserName: '',
     description: '',
     bottomText: '',
+    category: 'teaser', // 👈 مقدار دیفالت
     priority: 5
   });
   
@@ -111,6 +121,7 @@ export default function ProjectsListPage() {
       teaserName: project.teaserName || '',
       description: project.description || '',
       bottomText: project.bottomText || '',
+      category: project.category || 'teaser', // 👈 ست کردن کتگوریِ فعلیِ پروژه
       priority: project.priority || 5
     });
     setExistingVideos(project.videos || []);
@@ -130,7 +141,7 @@ export default function ProjectsListPage() {
   const handleEditVideoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const selectedFiles = Array.from(e.target.files);
-      const totalAllowed = 2 - existingVideos.length; // چقدر جا داریم؟
+      const totalAllowed = 2 - existingVideos.length; 
       
       setNewVideoFiles((prevFiles) => {
         const combinedFiles = [...prevFiles, ...selectedFiles];
@@ -157,7 +168,7 @@ export default function ProjectsListPage() {
     setNewVideoFiles(newVideoFiles.filter((_, idx) => idx !== index));
   };
 
-  // 🚀 ذخیره تغییرات پروژه (تبدیل به FormData بخاطر آپلود فایل)
+  // 🚀 ذخیره تغییرات پروژه 
   const handleUpdateProject = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingProject) return;
@@ -176,19 +187,18 @@ export default function ProjectsListPage() {
       formData.append('teaserName', editForm.teaserName);
       formData.append('description', editForm.description);
       formData.append('bottomText', editForm.bottomText);
+      formData.append('category', editForm.category); // 👈 ارسال کتگوری به بک‌اند برای آپدیت
       formData.append('priority', editForm.priority.toString());
       
-      // ارسال لیست ویدیوهای قدیمی که میخوایم نگه داریم بصورت آرایه JSON
       formData.append('existingVideos', JSON.stringify(existingVideos));
       
-      // اضافه کردن فایل‌های جدید
       newVideoFiles.forEach(file => {
         formData.append('videos', file);
       });
 
       const res = await fetchWithAuth(`/projects/${editingProject._id}`, {
         method: 'PUT',
-        body: formData // استفاده از FormData
+        body: formData 
       });
       
       const data = await res.json();
@@ -206,7 +216,6 @@ export default function ProjectsListPage() {
     }
   };
 
-  // 🎯 هندلرهای پخش و توقف ویدیو هنگام هاور
   const handleMouseEnter = (e: React.MouseEvent<HTMLVideoElement>) => {
     e.currentTarget.play().catch(() => {});
   };
@@ -291,6 +300,13 @@ export default function ProjectsListPage() {
                 transition={{ duration: 0.3 }}
                 className="bg-[#111111] border border-white/5 hover:border-white/10 rounded-[24px] overflow-hidden flex flex-col justify-between group transition-all shadow-2xl relative"
               >
+                {/* 🚀 برچسب دسته‌بندی پروژه */}
+                {project.category && (
+                  <div className={`absolute top-4 left-4 z-20 bg-black/60 backdrop-blur-md border border-white/10 text-white px-3 py-1.5 rounded-lg flex items-center justify-center font-bold text-xs shadow-lg`}>
+                    {categoryMap[project.category] || project.category}
+                  </div>
+                )}
+
                 {/* برچسب اولویت روی عکس */}
                 {project.priority && (
                   <div className={`absolute top-4 right-4 z-20 bg-white text-black w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm shadow-[0_0_15px_rgba(255,255,255,0.4)] ${outfitFont.className}`}>
@@ -377,7 +393,7 @@ export default function ProjectsListPage() {
       )}
 
       {/* ================================================================= */}
-      {/* 🚀 مدال ویرایش پروژه (پاپ‌آپ با قابلیت ویرایش ویدیو) */}
+      {/* 🚀 مدال ویرایش پروژه (پاپ‌آپ با قابلیت ویرایش ویدیو و دسته‌بندی) */}
       {/* ================================================================= */}
       <AnimatePresence>
         {isEditModalOpen && (
@@ -397,7 +413,6 @@ export default function ProjectsListPage() {
             >
               <div className="absolute -top-32 -left-32 w-64 h-64 bg-white/5 rounded-full blur-[100px] pointer-events-none"></div>
 
-              {/* هدر مدال */}
               <div className="p-6 md:p-8 flex items-center justify-between border-b border-white/5 relative z-10 shrink-0">
                 <div className="flex items-center gap-3">
                   <div className="w-2 h-8 bg-white rounded-full"></div>
@@ -411,7 +426,6 @@ export default function ProjectsListPage() {
                 </button>
               </div>
 
-              {/* فرم داخل مدال */}
               <div className="p-6 md:p-8 overflow-y-auto hide-scrollbar relative z-10">
                 <form id="editForm" onSubmit={handleUpdateProject} className="flex flex-col gap-6 md:gap-8">
                   
@@ -428,7 +442,6 @@ export default function ProjectsListPage() {
                     </div>
 
                     <div className="flex flex-col gap-3 mt-2">
-                      {/* لیست ویدیوهای قدیمی (از قبل روی سرور) */}
                       {existingVideos.map((vid, idx) => (
                         <div key={`old-${idx}`} className="flex items-center justify-between bg-[#111111] border border-white/10 px-4 py-3.5 rounded-xl shadow-inner group">
                           <div className="flex items-center gap-3 truncate">
@@ -448,7 +461,6 @@ export default function ProjectsListPage() {
                         </div>
                       ))}
 
-                      {/* لیست فایل‌های جدید (انتخاب شده برای آپلود) */}
                       {newVideoFiles.map((f, idx) => (
                         <div key={`new-${idx}`} className="flex items-center justify-between bg-[#111111] border border-white/10 px-4 py-3.5 rounded-xl shadow-inner group">
                           <div className="flex items-center gap-3 truncate">
@@ -468,7 +480,6 @@ export default function ProjectsListPage() {
                         </div>
                       ))}
 
-                      {/* دکمه افزودن ویدیوی جدید (اگر جا داشتیم) */}
                       {totalCurrentVideos < 2 && (
                         <div className="relative mt-2">
                           <input 
@@ -504,24 +515,51 @@ export default function ProjectsListPage() {
                     </div>
                   </div>
 
-                  <div className="flex flex-col gap-3 p-6 bg-[#050505] border border-white/5 rounded-2xl">
-                    <div className="flex flex-col gap-1">
-                      <label className="text-white text-sm font-bold tracking-wide">اولویت نمایش</label>
-                      <span className="text-zinc-500 text-xs font-bold">شماره ۱ (بالاترین جایگاه) تا ۵ (پایین‌ترین جایگاه)</span>
-                    </div>
-                    <div className="flex items-center gap-3">
-                      {[1, 2, 3, 4, 5].map((num) => (
-                        <button
-                          key={num} type="button" onClick={() => setEditForm({...editForm, priority: num})}
-                          className={`w-12 h-12 md:w-14 md:h-14 rounded-xl flex items-center justify-center font-bold text-xl transition-all ${outfitFont.className} ${
-                            editForm.priority === num 
-                              ? 'bg-white text-black scale-110 shadow-[0_0_20px_rgba(255,255,255,0.3)]' 
-                              : 'bg-[#111111] text-zinc-500 border border-white/5 hover:border-white/30 hover:text-white'
-                          }`}
+                  {/* 🚀 ردیف دسته‌بندی و اولویت در ادیت */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 bg-[#050505] border border-white/5 rounded-2xl">
+                    <div className="flex flex-col gap-3">
+                      <div className="flex flex-col gap-1">
+                        <label className="text-white text-sm font-bold tracking-wide">دسته‌بندی پروژه</label>
+                        <span className="text-zinc-500 text-xs font-bold">دسته‌بندی این پروژه را تغییر دهید.</span>
+                      </div>
+                      <div className="relative w-full">
+                        <select 
+                          value={editForm.category}
+                          onChange={(e) => setEditForm({...editForm, category: e.target.value})}
+                          className="w-full h-14 px-5 bg-[#111111] border border-white/10 rounded-xl text-white focus:outline-none focus:border-white/50 transition-all text-sm appearance-none cursor-pointer"
                         >
-                          {num}
-                        </button>
-                      ))}
+                          <option value="teaser">تیزر تبلیغاتی</option>
+                          <option value="content">تولید محتوا</option>
+                          <option value="product">معرفی محصول</option>
+                          <option value="service">معرفی خدمات</option>
+                          <option value="campaign">اجرای کمپین</option>
+                          <option value="web">طراحی سایت</option>
+                        </select>
+                        <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none text-white/50">
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-3">
+                      <div className="flex flex-col gap-1">
+                        <label className="text-white text-sm font-bold tracking-wide">اولویت نمایش</label>
+                        <span className="text-zinc-500 text-xs font-bold">۱ (بالاترین) تا ۵ (پایین‌ترین) جایگاه.</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {[1, 2, 3, 4, 5].map((num) => (
+                          <button
+                            key={num} type="button" onClick={() => setEditForm({...editForm, priority: num})}
+                            className={`w-12 h-12 rounded-xl flex items-center justify-center font-bold text-lg transition-all ${outfitFont.className} ${
+                              editForm.priority === num 
+                                ? 'bg-white text-black scale-110 shadow-[0_0_15px_rgba(255,255,255,0.3)]' 
+                                : 'bg-[#111111] text-zinc-500 border border-white/5 hover:border-white/30 hover:text-white'
+                            }`}
+                          >
+                            {num}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   </div>
 
@@ -543,7 +581,6 @@ export default function ProjectsListPage() {
                 </form>
               </div>
 
-              {/* فوتر مدال و دکمه ذخیره */}
               <div className="p-6 md:p-8 border-t border-white/5 bg-[#0a0a0a] flex items-center justify-end gap-4 shrink-0 relative z-10">
                 <button 
                   type="button" onClick={closeEditModal}
