@@ -414,6 +414,10 @@ export default function Page() {
   const [tune, setTune] = useState<HeroTune>(MOBILE_HERO_TUNE);
   const [applyOnDesktop, setApplyOnDesktop] = useState(false);
   const [projectsData, setProjectsData] = useState<any[]>([]);
+  
+  const [videoReady, setVideoReady] = useState(false);
+  const [preloaderDone, setPreloaderDone] = useState(false);
+  const heroAnimsRef = useRef<gsap.core.Timeline[]>([]);
 
   const heroRef = useRef<HTMLElement>(null);
   const maskRef = useRef<HTMLDivElement>(null);
@@ -491,6 +495,17 @@ export default function Page() {
     fetchProjects();
   }, []);
 
+  useEffect(() => {
+    const timer = setTimeout(() => setPreloaderDone(true), startDelay * 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (isMobile && preloaderDone && videoReady) {
+      heroAnimsRef.current.forEach(anim => anim.play());
+    }
+  }, [isMobile, preloaderDone, videoReady]);
+
   // 🚀 ویدیوهای تزئینی CSTD فقط وقتی در دید کاربر هستند پخش شوند.
   // Services کنترل پخش جداگانه دارد تا شروع decode/play با انیمیشن ورود همزمان نشود.
   useEffect(() => {
@@ -564,17 +579,25 @@ export default function Page() {
           onLeaveBack: () => gsap.to(headerRef.current, { backgroundColor: worksBgColor, duration: 0.15, overwrite: "auto" }), 
         });
 
-        // همون 1.01 به 1 رو جایگزین کن
-gsap.fromTo(maskRef.current, { scale: 1.01 }, { scale: 1, duration: 1.4, ease: "power3.out", delay: startDelay - 0.2 });
+        heroAnimsRef.current = [];
+        const isMobView = window.innerWidth <= 768; 
 
-        const tlHero = gsap.timeline({ delay: startDelay });
+        const masterHero = gsap.timeline({ paused: isMobView });
+
+        masterHero.fromTo(maskRef.current, { scale: 1.01 }, { scale: 1, duration: 1.4, ease: "power3.out" }, isMobView ? 0 : startDelay - 0.2);
+
+        const tlHero = gsap.timeline();
         tlHero.to(blackOverlayRef.current, { opacity: 0, duration: 0.4, ease: "power2.out" }, 0)
           .fromTo(cRef.current, { xPercent: -50 }, { xPercent: 0, duration: animDuration, ease: "power2.inOut" }, 0)
           .fromTo(iDotRef.current, { yPercent: -50 }, { yPercent: 0, duration: animDuration, ease: "power2.inOut" }, ">")
           .fromTo(iBodyRef.current, { yPercent: 0 }, { yPercent: -50, duration: animDuration, ease: "power2.inOut" }, "<")
           .fromTo(c2Ref.current, { xPercent: 0 }, { xPercent: -50, duration: animDuration, ease: "power2.inOut" }, ">");
+        
+        masterHero.add(tlHero, isMobView ? 0.2 : startDelay);
 
-        gsap.fromTo([doRef.current, thingsRef.current], { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 1.2, stagger: 0.2, ease: "power4.out", delay: startDelay + 1 });
+        masterHero.fromTo([doRef.current, thingsRef.current], { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 1.2, stagger: 0.2, ease: "power4.out" }, isMobView ? 1.2 : startDelay + 1);
+
+        heroAnimsRef.current.push(masterHero);
 
         let mm = gsap.matchMedia();
 
@@ -1107,8 +1130,17 @@ gsap.fromTo(maskRef.current, { scale: 1.01 }, { scale: 1, duration: 1.4, ease: "
 
       <section ref={heroRef} className="hero antialiased" dir="ltr" style={liveHeroVars}>
         <div className="hero__media">
-          <video autoPlay loop muted playsInline poster="/poster.jpg">
-            <source src="/hero-animation.mp4" type="video/mp4" />
+          <video 
+            key={isMobile ? "mobile" : "desktop"}
+            autoPlay 
+            loop 
+            muted 
+            playsInline 
+            poster="/poster.jpg"
+            onLoadStart={() => setVideoReady(false)}
+            onCanPlayThrough={() => setVideoReady(true)}
+          >
+            <source src={isMobile ? "/hero-mobile.mp4" : "/hero-desktop.mp4"} type="video/mp4" />
           </video>
         </div>
         <div ref={blackOverlayRef} className="hero__blackout" />
@@ -1200,7 +1232,7 @@ gsap.fromTo(maskRef.current, { scale: 1.01 }, { scale: 1, duration: 1.4, ease: "
           <div className="mob-cstd-drawer-anim flex flex-col items-center gap-5 mt-16 w-full max-w-[450px]" style={{ fontFamily: persianFontFamily }} dir="rtl">
             <p className="leading-relaxed font-light text-zinc-300 text-center text-[15px] px-2">ما برای ساختن برندهایی خلق می‌کنیم که فراموش نشوند. ما با کسب‌وکارها و برندهایی همکاری می‌کنیم که به دنبال رشد، تفاوت و تأثیرگذاری هستند.</p>
             <p className="leading-relaxed font-light text-zinc-300 text-center text-[15px] px-2">برای ما، طراحی فقط زیبایی نیست؛ حل مسئله است. باور داریم بهترین نتیجه، حاصل همکاری نزدیک با مشتری است.</p>
-            <p className="text-[16px] leading-snug font-medium text-white text-center mt-3">آماده خلق یک تجربه ماندگار هستید؟</p>
+            <p className="text-[16px] leading-snug font-medium text-white text-center mt-3">آماده خلق تجربه ماندگار هستید؟</p>
             <button 
               onClick={() => {
                 setMobileMenuOpen(true);
