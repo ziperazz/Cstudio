@@ -12,9 +12,10 @@ import ContactDrawer from '@/components/ContactDrawer';
 import { orbitronFont, outfitFont } from '@/app/fonts';
 
 gsap.registerPlugin(ScrollTrigger);
-// 🚀 رفع لگ اسکرول: جلوگیری از ری‌کلکولیت شدن ScrollTrigger با تغییر ارتفاع نوار آدرس موبایل حین اسکرول
+// 🚀 رفع لگ اسکرول و انتقال پردازش به کارت گرافیک (GPU)
 ScrollTrigger.config({ ignoreMobileResize: true });
 gsap.config({ nullTargetWarn: false });
+gsap.defaults({ force3D: true, ease: "power2.out" });
 
 // 🎛️===================================================================🎛️
 //                   داشبورد تنظیمات اصلی سایت
@@ -96,8 +97,8 @@ const heroWordsBottom = "clamp(28px, 2.24vw, 43px)";
 const heroWordsTransitionSpeed = "0.5s";
 
 const animDuration = 0.8;
-const preloaderDuration = 2;             
-const waitAfterPreload = 1;            
+const preloaderDuration = 3;             
+const waitAfterPreload = 2;              
 const startDelay = preloaderDuration + waitAfterPreload; 
 
 // 🎚️ پنل تنظیم زنده 
@@ -184,14 +185,16 @@ const mobServiceBoxEase = "power3.out";
 const mobServiceTextEase = "power2.inOut";   
 const mobServiceScrollStart = "top 35%";     
 const mobServiceScrollEnd = "top 10%";       
-const mobServiceScrub = 1;                   
+
+// 🚀 بهینه‌سازی: تبدیل اعداد اسکراب به true برای رفع لگ در موبایل
+const mobServiceScrub = true;                   
 const mobServiceTextSpeed = 0.7;             
 const mobServiceBoxSpeed = 1.3;              
 const mobServiceRestStartX = -80;            
 const mobServiceRestStartOpacity = 0;        
 const mobServiceRestScrollStart = "top 50%"; 
 const mobServiceRestScrollEnd = "top 30%";   
-const mobServiceRestScrub = 1.5;             
+const mobServiceRestScrub = true;             
 const mobServiceRestEase = "power2.out";     
 
 // 🎛️ تنظیماتِ بخش نمونه کارها 
@@ -251,7 +254,7 @@ const mobWorksFooterText2StartX = 10;
 const mobWorksFooterText2EndX = -160;                
 const mobWorksFooterAnimStart = "top 90%";          
 const mobWorksFooterAnimEnd = "bottom 60%";         
-const mobWorksFooterScrub = 1.5;                    
+const mobWorksFooterScrub = true; // 🚀 رفع لگ اسکراب موبایل                   
 
 const mobWorksBox1Width = "340px";          
 const mobWorksBox1Height = "480px";         
@@ -274,14 +277,14 @@ const mobWorksBoxEase = "power3.out";
 const mobWorksTextEase = "power2.inOut";    
 const mobWorksScrollStart = "top 20%";      
 const mobWorksScrollEnd = "top 10%";        
-const mobWorksScrub = 0.8;                  
+const mobWorksScrub = true; // 🚀 رفع لگ اسکراب                  
 const mobWorksTextSpeed = 0.8;              
 const mobWorksBoxSpeed = 1.3;               
 const mobWorksRestWallVisible = 0;          
 const mobWorksRestStartOpacity = 0;         
 const mobWorksRestScrollStart = "top 70%";  
 const mobWorksRestScrollEnd = "top 30%";    
-const mobWorksRestScrub = 2;              
+const mobWorksRestScrub = true; // 🚀 رفع لگ اسکراب             
 const mobWorksRestEase = "power2.out";      
 
 // 🎛️ تنظیماتِ بخش درباره ما
@@ -304,14 +307,14 @@ const aboutC_Y_Mob = "0px";
 const aboutTitle1_FontSize_Desk = "clamp(30px, 4vw, 75px)";
 const aboutTitle1_X_Desk = "0px";
 const aboutTitle1_Y_Desk = "0px";
-const aboutTitle1_FontSize_Mob = "55px"; // 🎯 سایز WE ARE تو موبایل بزرگ شد
+const aboutTitle1_FontSize_Mob = "55px"; 
 const aboutTitle1_X_Mob = "0px"; 
 const aboutTitle1_Y_Mob = "0px";
 
 const aboutTitle2_FontSize_Desk = "clamp(32px, 4.5vw, 85px)";
 const aboutTitle2_X_Desk = "0px";
 const aboutTitle2_Y_Desk = "0px";
-const aboutTitle2_FontSize_Mob = "55px"; // 🎯 سایز STUDIO تو موبایل بزرگ شد
+const aboutTitle2_FontSize_Mob = "55px"; 
 const aboutTitle2_X_Mob = "0px"; 
 const aboutTitle2_Y_Mob = "0px";
 
@@ -319,7 +322,7 @@ const stmt1_FontSize_Desk = "clamp(24px, 4vw, 70px)";
 const stmt1_MarginLeft_Desk = "clamp(1vw, 5vw, 6vw)";
 const stmt1_X_Desk = "clamp(-50px, -5.2vw, -20px)";       
 const stmt1_Y_Desk = "0px";          
-const stmt1_FontSize_Mob = "42px"; // 🎯 برگشت به 42px
+const stmt1_FontSize_Mob = "42px"; 
 const stmt1_MarginLeft_Mob = "0vw"; 
 const stmt1_X_Mob = "0px";           
 const stmt1_Y_Mob = "0px";           
@@ -334,7 +337,7 @@ const stmtPersian_Y_Mob = "0px";
 const stmt2_FontSize_Desk = "clamp(20px, 3.5vw, 60px)";
 const stmt2_X_Desk = "clamp(-50px, -5.2vw, -20px)";        
 const stmt2_Y_Desk = "0px";          
-const stmt2_FontSize_Mob = "38px"; // 🎯 برگشت به 38px
+const stmt2_FontSize_Mob = "38px"; 
 const stmt2_X_Mob = "0px";           
 const stmt2_Y_Mob = "0px";           
 
@@ -448,8 +451,6 @@ export default function Page() {
   const aboutNewSectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
-    // 🚀 رفع لگ اسکرول: throttle کردن resize با requestAnimationFrame تا هنگام اسکرول موبایل
-    // (که خود مرورگر با مخفی/ظاهر شدن نوار آدرس رویداد resize پشت‌سرهم می‌فرستد) ری‌رندرهای اضافه ایجاد نشود
     let rafId: number | null = null;
     const handleResize = () => {
       if (rafId !== null) return;
@@ -501,13 +502,20 @@ export default function Page() {
   }, []);
 
   useEffect(() => {
+    // 🚀 تایمر پشتیبان (۶ ثانیه): مهار باگ‌های اینترنت ضعیف یا سافاری
+    const fallbackTimer = setTimeout(() => {
+      if (!videoReady) setVideoReady(true);
+    }, 6000); 
+
+    return () => clearTimeout(fallbackTimer);
+  }, [videoReady]);
+
+  useEffect(() => {
     if (isMobile && preloaderDone && videoReady) {
       heroAnimsRef.current.forEach(anim => anim.play());
     }
   }, [isMobile, preloaderDone, videoReady]);
 
-  // 🚀 ویدیوهای تزئینی CSTD فقط وقتی در دید کاربر هستند پخش شوند.
-  // Services کنترل پخش جداگانه دارد تا شروع decode/play با انیمیشن ورود همزمان نشود.
   useEffect(() => {
     const videos = Array.from(document.querySelectorAll('video[data-lazyplay]')) as HTMLVideoElement[];
     if (videos.length === 0) return;
@@ -527,7 +535,6 @@ export default function Page() {
     return () => io.disconnect();
   }, []);
 
-  // 🎯 گرفتن دیتای واقعی با مدیریت ایمن
   const getProjectData = (index: number) => {
     const p = projectsData[index];
     
@@ -761,7 +768,6 @@ export default function Page() {
         });
 
         if (aboutNewSectionRef.current) {
-          // 🎯 اضافه کردن انیمیشنِ مرحله‌ای (stagger) به C و بقیه متون
           gsap.fromTo(gsap.utils.toArray('.about-top-anim', aboutNewSectionRef.current), { y: 80, opacity: 0 }, { y: 0, opacity: 1, duration: 1.25, stagger: 0.08, ease: "power4.out", scrollTrigger: { trigger: ".about-top-wrapper", start: "top 75%" } });
           gsap.fromTo(".about-anim-line", { scaleY: 0 }, { scaleY: 1, duration: 1.4, ease: "power4.inOut", transformOrigin: "top", scrollTrigger: { trigger: ".about-top-wrapper", start: "top 75%" } });
           
@@ -895,7 +901,9 @@ export default function Page() {
         @media (max-width: 768px) { .hero__media video { transform: scale(1.45); } }
 
         .hero__blackout { position: absolute; inset: 0; z-index: 20; background: ${solidBlackColor}; pointer-events: none; }
-        .hero__mask { position: absolute; inset: 0; z-index: 10; display: flex; overflow: hidden; pointer-events: none; border: var(--frame) solid var(--mask); }
+        
+        /* 🚀 بهینه‌سازی هیرو: ایزوله کردن محاسبه سایه‌های عظیم در GPU */
+        .hero__mask { position: absolute; inset: 0; z-index: 10; display: flex; overflow: hidden; pointer-events: none; border: var(--frame) solid var(--mask); contain: paint; isolation: isolate; }
 
         .col { position: relative; height: 100%; overflow: hidden; }
         .col--side { flex: var(--side-flex); }
@@ -939,6 +947,11 @@ export default function Page() {
           .i-body-zone { position: relative; top: auto; left: auto; right: auto; width: 100%; height: auto; flex-grow: 1; }
         }
 
+        /* 🚀 رفع لگ موبایل: کم کردن شعاع سایه در گوشی‌ها */
+        @media (max-width: 768px) {
+          .fill, .i-dot { box-shadow: 0 0 0 150vmax var(--mask) !important; }
+        }
+
         .hero-tuner__fab { position: fixed; z-index: 9999; right: 12px; bottom: 12px; width: 46px; height: 46px; border-radius: 50%; background: #1b1b1b; color: #fff; border: 1px solid #3a3a3a; font-size: 18px; line-height: 1; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 20px rgba(0,0,0,.6); cursor: pointer; }
         .hero-tuner { position: fixed; z-index: 9998; left: 0; right: 0; bottom: 0; max-height: 62svh; display: flex; flex-direction: column; background: rgba(14,14,14,.96); backdrop-filter: blur(14px); border-top: 1px solid #333; color: #eee; font-size: 12px; padding-bottom: env(safe-area-inset-bottom); }
         @media (min-width: 769px) { .hero-tuner { left: auto; right: 12px; bottom: 70px; width: 330px; border-radius: 12px; border: 1px solid #333; max-height: 76vh; } }
@@ -955,11 +968,9 @@ export default function Page() {
         .hero-tuner__label input[type="number"] { width: 64px; background: #1c1c1c; border: 1px solid #3a3a3a; color: #fff; border-radius: 5px; padding: 2px 6px; font-size: 11px; text-align: center; direction: ltr; }
         .hero-tuner__row input[type="range"] { width: 100%; accent-color: #fff; direction: ltr; }
 
-        /* 🚀 رفع لگ اسکرول: هینت GPU برای المان‌هایی که با GSAP/ScrollTrigger جابجا می‌شوند */
-        .gsap-gpu, .slider-x, .slider-y, .mobile-service-elements, .mobile-work-elements,
-        .mobile-services-text, .mobile-works-text, .about-scrub-line-inner,
-        .about-anim-img, .about-anim-img img {
-          will-change: transform, opacity;
+        /* 🚀 بهینه‌سازی will-change فقط برای المان‌های سنگین درگیر انیمیشن */
+        .slider-x, .slider-y {
+          will-change: transform;
         }
 
         .works-footer-container { margin-top: ${mobWorksFooterMarginTop}; margin-bottom: clamp(150px, 20vh, 250px); }
@@ -1026,8 +1037,11 @@ export default function Page() {
         {mobileMenuOpen && (
           <motion.div 
             variants={menuVariants} initial="initial" animate="animate" exit="exit"
-            className={`fixed inset-0 z-40 ${menuBgOpacity} flex justify-center`}
-            style={{ backdropFilter: menuBlurIntensity, WebkitBackdropFilter: menuBlurIntensity }}
+            className={`fixed inset-0 z-40 ${menuBgOpacity} flex justify-center transform-gpu will-change-opacity`}
+            style={{ 
+              backdropFilter: isMobile ? "blur(10px)" : menuBlurIntensity, 
+              WebkitBackdropFilter: isMobile ? "blur(10px)" : menuBlurIntensity 
+            }}
             dir="rtl"
           >
             <div className="relative w-full h-full max-w-[1920px] mx-auto pointer-events-auto flex flex-col md:block px-[30px] md:px-[100px] pt-[25vh] md:pt-[120px] pb-10">
@@ -1197,15 +1211,15 @@ export default function Page() {
           <div ref={mainTextRef} className="gsap-gpu absolute z-10 flex flex-col justify-between whitespace-nowrap uppercase tracking-tighter" style={{ width: blockWidthX, height: blockHeightY, fontSize: cstdMainFontSize, fontWeight: cstdFontWeight, lineHeight: cstdLineHeight, color: cstdFontColor, letterSpacing: '-0.02em', fontFamily: cstdFontFamily }}>
             <div className="flex items-center justify-between w-full" style={{ gap: cstdVideoWordGap }}>
               <div className="flex items-center" style={{ gap: cstdWordGap }}><span className="leading-none">WE</span><span className="leading-none">ARE</span></div>
-              <div className="overflow-hidden bg-zinc-800" style={{ width: cstdVideoWidth1, height: cstdVideoHeight, borderRadius: cstdVideoRadius }}><video data-lazyplay loop muted playsInline poster="/c1-poster.jpg" className="w-full h-full object-cover"><source src="/c1.mp4" type="video/mp4" /></video></div>
+              <div className="overflow-hidden bg-zinc-800" style={{ width: cstdVideoWidth1, height: cstdVideoHeight, borderRadius: cstdVideoRadius }}><video data-lazyplay preload="none" loop muted playsInline poster="/c1-poster.jpg" className="w-full h-full object-cover"><source src="/c1.mp4" type="video/mp4" /></video></div>
             </div>
             <div className="flex items-center justify-between w-full" style={{ gap: cstdVideoWordGap }}>
-              <div className="overflow-hidden bg-zinc-800" style={{ width: cstdVideoWidth2, height: cstdVideoHeight, borderRadius: cstdVideoRadius }}><video data-lazyplay loop muted playsInline poster="/c3-poster.jpg" className="w-full h-full object-cover"><source src="/c3.mp4" type="video/mp4" /></video></div>
+              <div className="overflow-hidden bg-zinc-800" style={{ width: cstdVideoWidth2, height: cstdVideoHeight, borderRadius: cstdVideoRadius }}><video data-lazyplay preload="none" loop muted playsInline poster="/c3-poster.jpg" className="w-full h-full object-cover"><source src="/c3.mp4" type="video/mp4" /></video></div>
               <span className="leading-none">C studio</span>
             </div>
             <div className="flex items-center justify-between w-full" style={{ gap: cstdVideoWordGap }}>
               <span className="leading-none">WE</span>
-              <div className="overflow-hidden bg-zinc-800" style={{ width: cstdVideoWidth3, height: cstdVideoHeight, borderRadius: cstdVideoRadius }}><video data-lazyplay loop muted playsInline poster="/c2-poster.jpg" className="w-full h-full object-cover"><source src="/c2.mp4" type="video/mp4" /></video></div>
+              <div className="overflow-hidden bg-zinc-800" style={{ width: cstdVideoWidth3, height: cstdVideoHeight, borderRadius: cstdVideoRadius }}><video data-lazyplay preload="none" loop muted playsInline poster="/c2-poster.jpg" className="w-full h-full object-cover"><source src="/c2.mp4" type="video/mp4" /></video></div>
               <span className="leading-none">DO</span>
             </div>
             <div className="flex items-center justify-between w-full"><span className="leading-none">BIG</span><span className="leading-none">THINGS</span></div>
@@ -1216,14 +1230,14 @@ export default function Page() {
           <div className="flex flex-col items-center w-full uppercase tracking-tighter" style={{ fontSize: mobCstdMainFontSize, fontWeight: cstdFontWeight, lineHeight: "1.15", color: cstdFontColor, letterSpacing: '-0.02em', fontFamily: cstdFontFamily }}>
             <div className="flex justify-center items-center gap-3 w-full whitespace-nowrap">
               <span>WE ARE</span>
-              <div className="overflow-hidden bg-zinc-800" style={{ width: mobCstdVideoWidth1, height: mobCstdVideoHeight, borderRadius: mobCstdVideoRadius }}><video data-lazyplay loop muted playsInline poster="/c1-poster.jpg" className="w-full h-full object-cover"><source src="/c1.mp4" type="video/mp4" /></video></div>
+              <div className="overflow-hidden bg-zinc-800" style={{ width: mobCstdVideoWidth1, height: mobCstdVideoHeight, borderRadius: mobCstdVideoRadius }}><video data-lazyplay preload="none" loop muted playsInline poster="/c1-poster.jpg" className="w-full h-full object-cover"><source src="/c1.mp4" type="video/mp4" /></video></div>
             </div>
             <div className="flex justify-center items-center gap-3 w-full whitespace-nowrap mt-1">
-              <div className="overflow-hidden bg-zinc-800" style={{ width: mobCstdVideoWidth2, height: mobCstdVideoHeight, borderRadius: mobCstdVideoRadius }}><video data-lazyplay loop muted playsInline poster="/c3-poster.jpg" className="w-full h-full object-cover"><source src="/c3.mp4" type="video/mp4" /></video></div>
+              <div className="overflow-hidden bg-zinc-800" style={{ width: mobCstdVideoWidth2, height: mobCstdVideoHeight, borderRadius: mobCstdVideoRadius }}><video data-lazyplay preload="none" loop muted playsInline poster="/c3-poster.jpg" className="w-full h-full object-cover"><source src="/c3.mp4" type="video/mp4" /></video></div>
               <span>C STUDIO</span>
             </div>
             <div className="flex justify-center items-center gap-3 w-full whitespace-nowrap mt-1">
-              <div className="overflow-hidden bg-zinc-800" style={{ width: mobCstdVideoWidth3, height: mobCstdVideoHeight, borderRadius: mobCstdVideoRadius }}><video data-lazyplay loop muted playsInline poster="/c2-poster.jpg" className="w-full h-full object-cover"><source src="/c2.mp4" type="video/mp4" /></video></div>
+              <div className="overflow-hidden bg-zinc-800" style={{ width: mobCstdVideoWidth3, height: mobCstdVideoHeight, borderRadius: mobCstdVideoRadius }}><video data-lazyplay preload="none" loop muted playsInline poster="/c2-poster.jpg" className="w-full h-full object-cover"><source src="/c2.mp4" type="video/mp4" /></video></div>
               <span>WE DO BIG</span>
             </div>
             <div className="flex justify-center items-center w-full whitespace-nowrap mt-1"><span>THINGS</span></div>
@@ -1232,7 +1246,7 @@ export default function Page() {
           <div className="mob-cstd-drawer-anim flex flex-col items-center gap-5 mt-16 w-full max-w-[450px]" style={{ fontFamily: persianFontFamily }} dir="rtl">
             <p className="leading-relaxed font-light text-zinc-300 text-center text-[15px] px-2">ما برای ساختن برندهایی خلق می‌کنیم که فراموش نشوند. ما با کسب‌وکارها و برندهایی همکاری می‌کنیم که به دنبال رشد، تفاوت و تأثیرگذاری هستند.</p>
             <p className="leading-relaxed font-light text-zinc-300 text-center text-[15px] px-2">برای ما، طراحی فقط زیبایی نیست؛ حل مسئله است. باور داریم بهترین نتیجه، حاصل همکاری نزدیک با مشتری است.</p>
-            <p className="text-[16px] leading-snug font-medium text-white text-center mt-3">آماده خلق تجربه ماندگار هستید؟</p>
+            <p className="text-[16px] leading-snug font-medium text-white text-center mt-3">آماده خلق یک تجربه ماندگار هستید؟</p>
             <button 
               onClick={() => {
                 setMobileMenuOpen(true);
@@ -1283,8 +1297,9 @@ export default function Page() {
                     <span className="block font-black uppercase select-none drop-shadow-2xl" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', color: mobServiceTextColor, fontSize: mobServiceTextFontSize, letterSpacing: mobServiceTextLetterSpacing, fontFamily: englishFontFamily }}>{mobServiceTextWord}</span>
                   </div>
                 )}
-                <Link href={`/works?category=${encodeURIComponent(item.category)}`} className="w-full relative overflow-hidden rounded-[24px] bg-white/[0.03] backdrop-blur-xl border border-white/10 shadow-2xl block" style={{ height: mobServiceBoxHeight }}>
-                  <video data-lazyplay src={item.video} poster={item.poster} loop muted playsInline className="absolute inset-0 w-full h-full object-cover opacity-80" />
+                {/* 🚀 حذف بک‌درپ بلور در کارت‌های موبایل برای رفع افت فریم */}
+                <Link href={`/works?category=${encodeURIComponent(item.category)}`} className="w-full relative overflow-hidden rounded-[24px] bg-[#161616] border border-white/10 shadow-2xl block" style={{ height: mobServiceBoxHeight }}>
+                  <video data-lazyplay src={item.video} preload="none" poster={item.poster} loop muted playsInline className="absolute inset-0 w-full h-full object-cover opacity-80" />
                   <div className="absolute inset-0 bg-black/30" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent opacity-80" />
                   <div className="relative z-10 flex flex-col justify-between h-full p-8 pointer-events-none" dir="rtl">
@@ -1314,6 +1329,7 @@ export default function Page() {
                                   {p0.video ? (
                                     <video 
                                       src={`${p0.video}#t=0.1`} 
+                                      preload="none"
                                       muted 
                                       playsInline 
                                       className="absolute inset-0 w-full h-full object-cover" 
@@ -1339,6 +1355,7 @@ export default function Page() {
                                       {p1.video ? (
                                         <video 
                                           src={`${p1.video}#t=0.1`} 
+                                          preload="none"
                                           muted 
                                           playsInline 
                                           className="absolute inset-0 w-full h-full object-cover" 
@@ -1362,6 +1379,7 @@ export default function Page() {
                                       {p2.video ? (
                                         <video 
                                           src={`${p2.video}#t=0.1`} 
+                                          preload="none"
                                           muted 
                                           playsInline 
                                           className="absolute inset-0 w-full h-full object-cover" 
@@ -1391,6 +1409,7 @@ export default function Page() {
                               {p3.video ? (
                                 <video 
                                   src={`${p3.video}#t=0.1`} 
+                                  preload="none"
                                   muted 
                                   playsInline 
                                   className="absolute inset-0 w-full h-full object-cover" 
@@ -1414,6 +1433,7 @@ export default function Page() {
                               {p4.video ? (
                                 <video 
                                   src={`${p4.video}#t=0.1`} 
+                                  preload="none"
                                   muted 
                                   playsInline 
                                   className="absolute inset-0 w-full h-full object-cover" 
@@ -1453,6 +1473,7 @@ export default function Page() {
                     {p.video ? (
                       <video 
                         src={`${p.video}#t=0.1`} 
+                        preload="none"
                         muted 
                         playsInline 
                         className="absolute inset-0 w-full h-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-[1.05]" 
