@@ -12,10 +12,9 @@ import ContactDrawer from '@/components/ContactDrawer';
 import { orbitronFont, outfitFont } from '@/app/fonts';
 
 gsap.registerPlugin(ScrollTrigger);
-// 🚀 رفع لگ اسکرول و انتقال پردازش به کارت گرافیک (GPU)
 ScrollTrigger.config({ ignoreMobileResize: true });
 gsap.config({ nullTargetWarn: false });
-gsap.defaults({ force3D: true, ease: "power2.out" });
+gsap.defaults({ ease: "power2.out" });
 
 // 🎛️===================================================================🎛️
 //                   داشبورد تنظیمات اصلی سایت
@@ -157,7 +156,7 @@ const bentoRevealStart = "top 50%";
 const bentoPaddingY = "clamp(90px, 14vh, 220px)";            
 const bentoAnimDuration = 1.7;           
 const bentoEntranceDistance = 300;       
-const servicesTextFontSize = "clamp(80px, 7vw, 135px)";    
+const servicesTextFontSize = "clamp(100px, 9vw, 165px)"; 
 const servicesTitleOffsetX = "clamp(16px, 2.1vw, 40px)";     
 const servicesGridGap = "clamp(16px, 1.56vw, 30px)";          
 const servicesBoxBaseHeight = "clamp(175px, 13.5vw, 285px)";   
@@ -186,7 +185,6 @@ const mobServiceTextEase = "power2.inOut";
 const mobServiceScrollStart = "top 35%";     
 const mobServiceScrollEnd = "top 10%";       
 
-// 🚀 بهینه‌سازی: تبدیل اعداد اسکراب به true برای رفع لگ در موبایل
 const mobServiceScrub = true;                   
 const mobServiceTextSpeed = 0.7;             
 const mobServiceBoxSpeed = 1.3;              
@@ -212,7 +210,11 @@ const worksWordColor = "#FFFFFF";
 const worksPaddingY = "clamp(120px, calc(-51.4px + 16.74vw), 270px)";
 const worksColGap = "clamp(14px, calc(7.1px + 0.67vw), 20px)";
 const worksRowGap = "clamp(30px, calc(7.1px + 2.23vw), 50px)";
-const worksWordSize = "clamp(120px, calc(28.6px + 8.93vw), 200px)";
+
+// 🚀 مشخصات دقیق دسکتاپ بر اساس سایت BBDO
+const worksWordSize = "200px";
+const worksWordLineHeight = "250px";
+
 const worksWordGap = "clamp(40px, calc(-17.1px + 5.58vw), 90px)";
 const worksBoxGlobalScale = 1.00;
 const worksTitleOffsetX = "0px";
@@ -243,7 +245,7 @@ const worksFooterText1EndX = 40;
 const worksFooterText2StartX = 250;      
 const worksFooterText2EndX = -250; 
 
-// 🎯 مقادیر دقیقاً برگشت به تنظیمات اورجینال
+// 🎯 مقادیر دقیق و اورجینال موبایل (دست نخورده)
 const mobWorksFooterFontSize = "105px";              
 const mobWorksFooterLetterSpacing = "-1px";         
 const mobWorksFooterGap = "-15px";                  
@@ -254,7 +256,7 @@ const mobWorksFooterText2StartX = 10;
 const mobWorksFooterText2EndX = -160;                
 const mobWorksFooterAnimStart = "top 90%";          
 const mobWorksFooterAnimEnd = "bottom 60%";         
-const mobWorksFooterScrub = true; // 🚀 رفع لگ اسکراب موبایل                   
+const mobWorksFooterScrub = true;                  
 
 const mobWorksBox1Width = "340px";          
 const mobWorksBox1Height = "480px";         
@@ -277,14 +279,14 @@ const mobWorksBoxEase = "power3.out";
 const mobWorksTextEase = "power2.inOut";    
 const mobWorksScrollStart = "top 20%";      
 const mobWorksScrollEnd = "top 10%";        
-const mobWorksScrub = true; // 🚀 رفع لگ اسکراب                  
+const mobWorksScrub = true;               
 const mobWorksTextSpeed = 0.8;              
 const mobWorksBoxSpeed = 1.3;               
 const mobWorksRestWallVisible = 0;          
 const mobWorksRestStartOpacity = 0;         
 const mobWorksRestScrollStart = "top 70%";  
 const mobWorksRestScrollEnd = "top 30%";    
-const mobWorksRestScrub = true; // 🚀 رفع لگ اسکراب             
+const mobWorksRestScrub = true;           
 const mobWorksRestEase = "power2.out";      
 
 // 🎛️ تنظیماتِ بخش درباره ما
@@ -502,7 +504,6 @@ export default function Page() {
   }, []);
 
   useEffect(() => {
-    // 🚀 تایمر پشتیبان (۶ ثانیه): مهار باگ‌های اینترنت ضعیف یا سافاری
     const fallbackTimer = setTimeout(() => {
       if (!videoReady) setVideoReady(true);
     }, 6000); 
@@ -570,19 +571,19 @@ export default function Page() {
 
         ScrollTrigger.create({
           trigger: "#services-section", start: "top 80px", end: "bottom top",
-          onEnter: () => gsap.to(headerRef.current, { backgroundColor: "#111111", duration: 0.15, overwrite: "auto" }),
+          onEnter: () => gsap.to(headerRef.current, { backgroundColor: "#1a1a1a", duration: 0.15, overwrite: "auto" }),
           onLeaveBack: () => gsap.to(headerRef.current, { backgroundColor: solidBlackColor, duration: 0.15, overwrite: "auto" }),
         });
 
         ScrollTrigger.create({
           trigger: "#works-section", start: "top 80px", end: "bottom top",
           onEnter: () => gsap.to(headerRef.current, { backgroundColor: worksBgColor, duration: 0.15, overwrite: "auto" }),
-          onLeaveBack: () => gsap.to(headerRef.current, { backgroundColor: "#111111", duration: 0.15, overwrite: "auto" }), 
+          onLeaveBack: () => gsap.to(headerRef.current, { backgroundColor: "#1a1a1a", duration: 0.15, overwrite: "auto" }), 
         });
 
         ScrollTrigger.create({
           trigger: aboutNewSectionRef.current, start: "top 80px", end: "bottom top",
-          onEnter: () => gsap.to(headerRef.current, { backgroundColor: "#111111", duration: 0.15, overwrite: "auto" }), 
+          onEnter: () => gsap.to(headerRef.current, { backgroundColor: "#1a1a1a", duration: 0.15, overwrite: "auto" }), 
           onLeaveBack: () => gsap.to(headerRef.current, { backgroundColor: worksBgColor, duration: 0.15, overwrite: "auto" }), 
         });
 
@@ -902,7 +903,6 @@ export default function Page() {
 
         .hero__blackout { position: absolute; inset: 0; z-index: 20; background: ${solidBlackColor}; pointer-events: none; }
         
-        /* 🚀 بهینه‌سازی هیرو: ایزوله کردن محاسبه سایه‌های عظیم در GPU */
         .hero__mask { position: absolute; inset: 0; z-index: 10; display: flex; overflow: hidden; pointer-events: none; border: var(--frame) solid var(--mask); contain: paint; isolation: isolate; }
 
         .col { position: relative; height: 100%; overflow: hidden; }
@@ -947,7 +947,6 @@ export default function Page() {
           .i-body-zone { position: relative; top: auto; left: auto; right: auto; width: 100%; height: auto; flex-grow: 1; }
         }
 
-        /* 🚀 رفع لگ موبایل: کم کردن شعاع سایه در گوشی‌ها */
         @media (max-width: 768px) {
           .fill, .i-dot { box-shadow: 0 0 0 150vmax var(--mask) !important; }
         }
@@ -968,7 +967,6 @@ export default function Page() {
         .hero-tuner__label input[type="number"] { width: 64px; background: #1c1c1c; border: 1px solid #3a3a3a; color: #fff; border-radius: 5px; padding: 2px 6px; font-size: 11px; text-align: center; direction: ltr; }
         .hero-tuner__row input[type="range"] { width: 100%; accent-color: #fff; direction: ltr; }
 
-        /* 🚀 بهینه‌سازی will-change فقط برای المان‌های سنگین درگیر انیمیشن */
         .slider-x, .slider-y {
           will-change: transform;
         }
@@ -1006,7 +1004,7 @@ export default function Page() {
         <HeroTunerPanel tune={tune} setTune={setTune} applyOnDesktop={applyOnDesktop} setApplyOnDesktop={setApplyOnDesktop} isTabletOrLaptop={isTabletOrLaptop} />
       )}
 
-       <Preloader />
+      <Preloader />
 
       <header ref={headerRef} className="fixed top-0 left-0 w-full z-50 h-[80px] md:h-[100px] bg-transparent" dir="ltr">
         <div className="w-full relative h-full">
@@ -1150,7 +1148,6 @@ export default function Page() {
             loop 
             muted 
             playsInline 
-            poster="/poster.jpg"
             onLoadStart={() => setVideoReady(false)}
             onCanPlayThrough={() => setVideoReady(true)}
           >
@@ -1195,14 +1192,13 @@ export default function Page() {
               باور داریم بهترین نتیجه، حاصل همکاری نزدیک با مشتری است.
             </p>
             <p className="leading-snug font-medium text-white" style={{ fontSize: `calc(${cstdSmallTextFontSize} * 0.8)` }}>آماده خلق یک تجربه ماندگار هستید؟</p>
+            
+            {/* 🚀 دکمه بزرگ‌تر و با جلوه بهتر در دسکتاپ */}
             <button 
               onClick={() => {
-                setMobileMenuOpen(true);
-                setTimeout(() => {
-                  setContactDrawerOpen(true);
-                }, 600); 
+                setContactDrawerOpen(true);
               }}
-              className="self-start px-9 py-3 rounded-full border border-white text-white font-medium hover:bg-white hover:text-black transition-colors duration-300 tracking-wide text-sm"
+              className="self-start px-8 py-3 md:px-12 md:py-5 rounded-full border-2 border-white text-white font-bold hover:bg-white hover:text-black transition-colors duration-300 tracking-wider text-base md:text-xl shadow-lg"
             >
               شروع همکاری
             </button>
@@ -1246,13 +1242,11 @@ export default function Page() {
           <div className="mob-cstd-drawer-anim flex flex-col items-center gap-5 mt-16 w-full max-w-[450px]" style={{ fontFamily: persianFontFamily }} dir="rtl">
             <p className="leading-relaxed font-light text-zinc-300 text-center text-[15px] px-2">ما برای ساختن برندهایی خلق می‌کنیم که فراموش نشوند. ما با کسب‌وکارها و برندهایی همکاری می‌کنیم که به دنبال رشد، تفاوت و تأثیرگذاری هستند.</p>
             <p className="leading-relaxed font-light text-zinc-300 text-center text-[15px] px-2">برای ما، طراحی فقط زیبایی نیست؛ حل مسئله است. باور داریم بهترین نتیجه، حاصل همکاری نزدیک با مشتری است.</p>
-            <p className="text-[16px] leading-snug font-medium text-white text-center mt-3">آماده خلق یک تجربه ماندگار هستید؟</p>
+            <p className="text-[16px] leading-snug font-medium text-white text-center mt-3">آماده خلق تجربه ماندگار هستید؟</p>
+            
             <button 
               onClick={() => {
-                setMobileMenuOpen(true);
-                setTimeout(() => {
-                  setContactDrawerOpen(true);
-                }, 600); 
+                setContactDrawerOpen(true);
               }}
               className="w-[85%] max-w-[320px] py-4 rounded-full border border-white text-white font-bold hover:bg-white hover:text-black transition-colors duration-300 tracking-wide text-[16px] mt-4 shadow-lg shadow-black/20"
             >
@@ -1262,17 +1256,17 @@ export default function Page() {
         </div>
       </section>
 
-      <section id="services-section" ref={bentoSectionRef} className="relative w-full text-white overflow-hidden z-20 transform-gpu" dir="rtl" style={{ backgroundColor: "#111111", fontFamily: persianFontFamily }}>
+      <section id="services-section" ref={bentoSectionRef} className="relative w-full text-white overflow-hidden z-20 transform-gpu" dir="rtl" style={{ backgroundColor: "#1a1a1a", fontFamily: persianFontFamily }}>
         <div className="hidden md:flex flex-col items-center justify-center w-full min-h-screen" style={{ paddingTop: bentoPaddingY, paddingBottom: bentoPaddingY }}>
           <div ref={verticalTextParentRef} className="gsap-gpu absolute pointer-events-none z-0 opacity-0" style={{ left: servicesTitleOffsetX }}>
-            <span className="block font-black tracking-widest uppercase select-none drop-shadow-lg" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', color: '#d1d1d1', fontSize: servicesTextFontSize, fontFamily: englishFontFamily }}>SERVICES</span>
+            <span className="block font-black uppercase select-none drop-shadow-lg" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', color: '#e5e5e5', fontSize: "clamp(100px, 9vw, 165px)", letterSpacing: '-0.02em', fontFamily: englishFontFamily }}>SERVICES</span>
           </div>
           <div className="gsap-gpu bento-grid-wrapper relative z-10 mx-auto px-6 md:pr-12 w-full opacity-0" style={{ transform: `scale(${servicesGridScale})`, paddingLeft: 'clamp(64px, 6.25vw, 120px)', maxWidth: 'min(1600px, 82vw)' }}>
             <div className="grid grid-cols-1 md:grid-cols-4" style={{ gap: servicesGridGap, gridAutoRows: servicesBoxBaseHeight }}>
               {servicesBentoData.map((item, idx) => (
-                <Link href={`/works?category=${encodeURIComponent(item.category)}`} key={idx} onMouseEnter={() => setHoveredBento(idx)} onMouseLeave={() => setHoveredBento(null)} className={`relative group overflow-hidden rounded-[24px] bg-white/[0.03] backdrop-blur-xl border border-white/10 transition-colors duration-500 hover:border-white/20 cursor-pointer ${item.col} ${item.row}`}>
+                <Link href={`/works?category=${encodeURIComponent(item.category)}`} key={idx} onMouseEnter={() => setHoveredBento(idx)} onMouseLeave={() => setHoveredBento(null)} className={`relative group overflow-hidden rounded-[24px] bg-white/[0.05] backdrop-blur-xl border border-white/10 transition-colors duration-500 hover:border-white/20 cursor-pointer ${item.col} ${item.row}`}>
                   <img data-services-preview src={item.poster} alt="" aria-hidden="true" className="absolute inset-0 z-[1] w-full h-full object-cover pointer-events-none transition-opacity duration-150" />
-                  <video data-services-video src={item.video} preload="none" loop muted playsInline className="absolute inset-0 z-0 w-full h-full object-cover opacity-0" style={{ transform: hoveredBento === idx ? `scale(${bentoVideoHoverScale})` : 'scale(1)', transition: 'transform 0.7s cubic-bezier(0.25, 1, 0.5, 1)', opacity: 0 }} />
+                  <video data-services-video src={item.video} preload="auto" loop muted playsInline className="absolute inset-0 z-0 w-full h-full object-cover opacity-0" style={{ transform: hoveredBento === idx ? `scale(${bentoVideoHoverScale})` : 'scale(1)', transition: 'transform 0.7s cubic-bezier(0.25, 1, 0.5, 1)', opacity: 0 }} />
                   <div className="absolute inset-0 z-[2] transition-all duration-500" style={{ backgroundColor: hoveredBento === idx ? `rgba(0,0,0,${servicesOverlayHoverOpacity})` : `rgba(0,0,0,${servicesOverlayOpacity})`, backdropFilter: 'none' }} />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent opacity-80 group-hover:opacity-60 transition-opacity duration-500" />
                   <div className="relative z-10 flex flex-col justify-between h-full p-6 md:p-8 pointer-events-none">
@@ -1297,9 +1291,8 @@ export default function Page() {
                     <span className="block font-black uppercase select-none drop-shadow-2xl" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', color: mobServiceTextColor, fontSize: mobServiceTextFontSize, letterSpacing: mobServiceTextLetterSpacing, fontFamily: englishFontFamily }}>{mobServiceTextWord}</span>
                   </div>
                 )}
-                {/* 🚀 حذف بک‌درپ بلور در کارت‌های موبایل برای رفع افت فریم */}
-                <Link href={`/works?category=${encodeURIComponent(item.category)}`} className="w-full relative overflow-hidden rounded-[24px] bg-[#161616] border border-white/10 shadow-2xl block" style={{ height: mobServiceBoxHeight }}>
-                  <video data-lazyplay src={item.video} preload="none" poster={item.poster} loop muted playsInline className="absolute inset-0 w-full h-full object-cover opacity-80" />
+                <Link href={`/works?category=${encodeURIComponent(item.category)}`} className="w-full relative overflow-hidden rounded-[24px] bg-[#222222] border border-white/10 shadow-2xl block" style={{ height: mobServiceBoxHeight }}>
+                  <video data-lazyplay src={item.video} preload="auto" poster={item.poster} loop muted playsInline className="absolute inset-0 w-full h-full object-cover opacity-80" />
                   <div className="absolute inset-0 bg-black/30" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent opacity-80" />
                   <div className="relative z-10 flex flex-col justify-between h-full p-8 pointer-events-none" dir="rtl">
@@ -1316,12 +1309,13 @@ export default function Page() {
       <section id="works-section" ref={worksSectionRef} className="relative w-full min-h-screen text-white overflow-hidden z-20 flex flex-col items-center" dir="rtl" style={{ backgroundColor: worksBgColor, fontFamily: persianFontFamily }}>
         <div className="works-desktop-shell hidden md:flex relative w-full items-start justify-center" style={{ paddingTop: worksPaddingY, paddingBottom: worksPaddingY, paddingLeft: 'clamp(40px, 5vw, 100px)', paddingRight: 'clamp(40px, 5vw, 100px)' }}>
           <div className="works-boxes-wrap relative flex-1 flex flex-col w-full" style={{ maxWidth: '1700px' }}>
-              <div ref={worksTextRef} className="gsap-gpu absolute top-0 right-0 flex items-start select-none z-10 opacity-0" style={{ width: worksWordSize, transform: `translate(${worksTitleOffsetX}, ${worksTitleOffsetY})` }}>
-                  <span className="block font-black uppercase tracking-widest drop-shadow-2xl" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', color: worksWordColor, fontSize: worksWordSize, lineHeight: '1', fontFamily: englishFontFamily }}>{worksWordText}</span>
+              {/* 🚀 کلمه WORK دسکتاپ بر اساس مشخصات BBDO: اندازه 200px، لاین‌هایت 250px و وزن بولدتر */}
+              <div ref={worksTextRef} className="gsap-gpu absolute top-0 right-0 flex items-start select-none z-10 opacity-0" style={{ width: worksWordLineHeight, transform: `translate(${worksTitleOffsetX}, ${worksTitleOffsetY})` }}>
+                  <span className="block font-black uppercase drop-shadow-2xl" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', color: worksWordColor, fontSize: worksWordSize, lineHeight: worksWordLineHeight, fontFamily: englishFontFamily, fontWeight: 900, WebkitTextStroke: '1.5px #FFFFFF' }}>{worksWordText}</span>
               </div>
               <div ref={worksBoxesWrapperRef} className="gsap-gpu flex flex-col w-full opacity-0 origin-top" style={{ transform: `scale(${worksBoxGlobalScale})` }}>
                   <div className="flex w-full justify-end">
-                      <div className="flex flex-row" style={{ width: `calc(100% - ${worksWordSize} - ${worksWordGap})`, gap: worksColGap }}>
+                      <div className="flex flex-row" style={{ width: `calc(100% - ${worksWordLineHeight} - ${worksWordGap})`, gap: worksColGap }}>
                           
                           {/* 🌟 کارت ۱ دسکتاپ */}
                           <Link href={p0.slug} className="flex-1 flex flex-col relative group" onMouseEnter={() => setHoveredWork(1)} onMouseLeave={() => setHoveredWork(null)}>
@@ -1329,7 +1323,7 @@ export default function Page() {
                                   {p0.video ? (
                                     <video 
                                       src={`${p0.video}#t=0.1`} 
-                                      preload="none"
+                                      preload="metadata"
                                       muted 
                                       playsInline 
                                       className="absolute inset-0 w-full h-full object-cover" 
@@ -1355,7 +1349,7 @@ export default function Page() {
                                       {p1.video ? (
                                         <video 
                                           src={`${p1.video}#t=0.1`} 
-                                          preload="none"
+                                          preload="metadata"
                                           muted 
                                           playsInline 
                                           className="absolute inset-0 w-full h-full object-cover" 
@@ -1379,7 +1373,7 @@ export default function Page() {
                                       {p2.video ? (
                                         <video 
                                           src={`${p2.video}#t=0.1`} 
-                                          preload="none"
+                                          preload="metadata"
                                           muted 
                                           playsInline 
                                           className="absolute inset-0 w-full h-full object-cover" 
@@ -1409,7 +1403,7 @@ export default function Page() {
                               {p3.video ? (
                                 <video 
                                   src={`${p3.video}#t=0.1`} 
-                                  preload="none"
+                                  preload="metadata"
                                   muted 
                                   playsInline 
                                   className="absolute inset-0 w-full h-full object-cover" 
@@ -1433,7 +1427,7 @@ export default function Page() {
                               {p4.video ? (
                                 <video 
                                   src={`${p4.video}#t=0.1`} 
-                                  preload="none"
+                                  preload="metadata"
                                   muted 
                                   playsInline 
                                   className="absolute inset-0 w-full h-full object-cover" 
@@ -1456,7 +1450,7 @@ export default function Page() {
           </div>
         </div>
 
-        {/* 🌟 بخش موبایل */}
+        {/* 🌟 بخش موبایل (کاملاً دست‌نخورده و منطبق بر کد اولیه) */}
         <div className="flex md:hidden flex-col w-full relative pt-[15vh] pb-0" style={{ gap: mobWorksGapY }} dir="ltr">
           {[0, 1, 2, 3, 4].map((idx) => {
             const p = getProjectData(idx);
@@ -1473,7 +1467,7 @@ export default function Page() {
                     {p.video ? (
                       <video 
                         src={`${p.video}#t=0.1`} 
-                        preload="none"
+                        preload="metadata" 
                         muted 
                         playsInline 
                         className="absolute inset-0 w-full h-full object-cover opacity-90 transition-transform duration-700 group-hover:scale-[1.05]" 
@@ -1509,7 +1503,7 @@ export default function Page() {
       </section>
 
       <section id="new-about-section" ref={aboutNewSectionRef} dir="ltr" className="w-full overflow-hidden relative z-20" style={{ 
-          backgroundColor: "#111111",
+          backgroundColor: "#1a1a1a",
           '--c-fz-d': aboutC_FontSize_Desk, '--c-x-d': aboutC_X_Desk, '--c-y-d': aboutC_Y_Desk,
           '--c-fz-m': aboutC_FontSize_Mob, '--c-x-m': aboutC_X_Mob, '--c-y-m': aboutC_Y_Mob,
           '--t1-fz-d': aboutTitle1_FontSize_Desk, '--t1-x-d': aboutTitle1_X_Desk, '--t1-y-d': aboutTitle1_Y_Desk,

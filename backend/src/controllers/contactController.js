@@ -34,7 +34,7 @@ exports.submitContact = async (req, res) => {
         const messageText = message ? `📝 توضیحات:\n${message}\n` : '';
         const servicesText = services.join('، '); // تبدیل آرایه به متن جدا شده با کاما
 
-        const text = `🔥 درخواست جدید از C STUDIO!\n\n👤 نام: ${name}\n${brandText}📱 تماس: ${phone}\n${emailText}🎯 خدمات درخواستی: ${servicesText}\n\n${messageText}`;
+        const text = `درخواست جدید از C STUDIO!\n\n نام: ${name}\n${brandText} تماس: ${phone}\n${emailText} خدمات درخواستی: ${servicesText}\n\n${messageText}`;
 
         // ==========================================
         // 🚀 ارسال به تلگرام (با پروکسی)

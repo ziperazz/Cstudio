@@ -137,7 +137,7 @@ export default function AdminDashboardPage() {
         <div className="absolute top-0 right-1/4 w-64 md:w-96 h-64 md:h-96 bg-white/5 rounded-full blur-[100px] md:blur-[120px] pointer-events-none"></div>
         
         <div className="flex flex-col gap-2 relative z-10">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight">مرکز فرماندهی</h1>
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white tracking-tight">داشبورد</h1>
           <p className="text-zinc-400 text-xs md:text-sm mt-1 leading-relaxed">نمای کلی سیستم، آمار زنده و دسترسی سریع به ابزارهای استودیو.</p>
         </div>
 

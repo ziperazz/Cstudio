@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams, notFound } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { motion, AnimatePresence } from 'framer-motion';
 import gsap from 'gsap';
@@ -42,12 +42,10 @@ const solidBlackColor = "#000000";
 const persianFontFamily = '"AzarMehr", "OpenAI Sans", sans-serif';
 const englishFontFamily = '"Outfit", sans-serif';
 
-// 🚀 تنظیم زمان پری‌لودر 
+const premiumEase = [0.76, 0, 0.24, 1];
 const preloaderDurationMs = 2700;
 
-// 🎛️===================================================================🎛️
-//                   تنظیمات هدر و منوی همبرگری (سینک شده با هوم پیج)
-// 🎛️===================================================================🎛️
+// 🎛️ تنظیمات هدر و منو
 const cColor = "#888888";                
 const studioColor = "#FFFFFF";           
 const logoHoverColor = "#FFFFFF";        
@@ -91,7 +89,6 @@ const navLinks = [
   { name: 'پنل مدیریت', href: '/auth' },
 ];
 
-// 🚀 آپدیت اینترفیس منطبق با دیتابیس جدید
 interface Project {
   _id: string;
   companyName: string;
@@ -106,7 +103,10 @@ interface Project {
 }
 
 export default function ProjectDetailsPage() {
-  const { slug } = useParams();
+  const params = useParams();
+  const slug = params?.slug as string;
+  const router = useRouter();
+
   const [project, setProject] = useState<Project | null>(null);
   const [suggestedProjects, setSuggestedProjects] = useState<Project[]>([]);
   
@@ -121,7 +121,20 @@ export default function ProjectDetailsPage() {
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [contactDrawerOpen, setContactDrawerOpen] = useState(false);
+
+  // استیت‌های دراور سفارش
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const [orderStep, setOrderStep] = useState(1);
+  const [isOrderSubmitted, setIsOrderSubmitted] = useState(false);
+  const [isOrderSending, setIsOrderSending] = useState(false);
+  const orderScrollContainerRef = useRef<HTMLDivElement>(null);
+
+  const [orderForm, setOrderForm] = useState({ name: '', brand: '', phone: '', email: '', message: '' });
   
+  const isOrderNameValid = orderForm.name.trim().length >= 3;
+  const isOrderPhoneValid = /^09[0-9]{9}$/.test(orderForm.phone.replace(/\s/g, ''));
+  const isOrderEmailValid = orderForm.email.trim() === '' || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(orderForm.email);
+
   const headerRef = useRef<HTMLElement>(null);
   const carouselRef = useRef<HTMLDivElement>(null);
   const pageRef = useRef<HTMLDivElement>(null);
@@ -138,13 +151,33 @@ export default function ProjectDetailsPage() {
   }, []);
 
   useEffect(() => {
-    if (isPreloading || mobileMenuOpen || contactDrawerOpen) {
+    if (isPreloading || mobileMenuOpen || contactDrawerOpen || isOrderModalOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
     }
     return () => { document.body.style.overflow = ''; };
-  }, [isPreloading, mobileMenuOpen, contactDrawerOpen]);
+  }, [isPreloading, mobileMenuOpen, contactDrawerOpen, isOrderModalOpen]);
+
+  useEffect(() => {
+    if (isOrderModalOpen) {
+      setOrderStep(1);
+      setIsOrderSubmitted(false);
+      setIsOrderSending(false);
+      setOrderForm({ name: '', brand: '', phone: '', email: '', message: '' });
+    }
+  }, [isOrderModalOpen]);
+
+  useEffect(() => {
+    if (isOrderModalOpen && orderScrollContainerRef.current) {
+      setTimeout(() => {
+        orderScrollContainerRef.current?.scrollTo({
+          top: orderScrollContainerRef.current.scrollHeight,
+          behavior: 'smooth'
+        });
+      }, 100);
+    }
+  }, [orderStep, isOrderModalOpen]);
 
   useEffect(() => {
     const handleResize = () => setWindowWidth(window.innerWidth);
@@ -153,31 +186,50 @@ export default function ProjectDetailsPage() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
+  // 🚀 واکشی هوشمند با پشتیبانی همزمان از slug و _id
   useEffect(() => {
     const fetchData = async () => {
+      if (!slug) return;
       try {
-        const resProject = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects/slug/${slug}`);
-        const dataProject = await resProject.json();
+        let matchedProject: Project | null = null;
 
-        const resAll = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects`);
-        const dataAll = await resAll.json();
+        // گام ۱: تلاش برای دریافت با slug
+        const resSlug = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects/slug/${slug}`);
+        const dataSlug = await resSlug.json();
 
-        if (dataProject.success) {
-          setProject(dataProject.data);
-
-          if (dataAll.success) {
-            const others = dataAll.data.filter((p: Project) => p.slug && p.slug !== slug);
-            const topSuggested = others.slice(0, 5);
-            setSuggestedProjects(topSuggested);
+        if (dataSlug.success && dataSlug.data) {
+          matchedProject = dataSlug.data;
+        } else if (/^[0-9a-fA-F]{24}$/.test(slug)) {
+          // گام ۲: در صورت نبود slug و معتبر بودن ساختار MongoDB ID
+          const resId = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects/${slug}`);
+          const dataId = await resId.json();
+          if (dataId.success && dataId.data) {
+            matchedProject = dataId.data;
           }
+        }
+
+        if (matchedProject) {
+          setProject(matchedProject);
+
+          // دریافت پروژه‌های پیشنهادی
+          const resAll = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/projects`);
+          const dataAll = await resAll.json();
+          if (dataAll.success && Array.isArray(dataAll.data)) {
+            const others = dataAll.data.filter((p: Project) => p._id !== matchedProject?._id && p.slug !== matchedProject?.slug);
+            setSuggestedProjects(others.slice(0, 5));
+          }
+        } else {
+          setProject(null);
         }
       } catch (err) {
         console.error('خطا در دریافت اطلاعات:', err);
+        setProject(null);
       } finally {
         setIsLoading(false);
       }
     };
-    if (slug) fetchData();
+
+    fetchData();
   }, [slug]);
 
   useEffect(() => {
@@ -244,8 +296,61 @@ export default function ProjectDetailsPage() {
   const moreWorksTitleMargin = isMobile ? '0px' : isTabletOrLaptop ? '60px' : moreWorksTitleMarginRight;
   const moreWorksCardW = isMobile ? '85vw' : isTabletOrLaptop ? '42vw' : moreWorksCardWidth;
 
-  // پوستر پیش‌فرض برای ویدیوها (استفاده از شات اول پروژه)
   const heroPoster = project?.screenshots && project.screenshots.length > 0 ? `${process.env.NEXT_PUBLIC_BACKEND_URL}${project.screenshots[0]}` : '';
+
+  const handleOrderChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setOrderForm({ ...orderForm, [e.target.name]: e.target.value });
+  };
+
+  const nextOrderStep = (targetStep: number) => {
+    setOrderStep(targetStep);
+  };
+
+  const handleOrderKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, targetStep: number) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      if (orderStep === 1 && !isOrderNameValid) return;
+      if (orderStep === 2 && (!isOrderPhoneValid || !isOrderEmailValid)) return;
+      nextOrderStep(targetStep);
+    }
+  };
+
+  const handleOrderSubmit = async () => {
+    if (!isOrderNameValid || !isOrderPhoneValid || !isOrderEmailValid) return;
+    setIsOrderSending(true);
+
+    const payload = {
+      projectId: project?._id,
+      projectSlug: project?.slug,
+      projectVideo: project?.videos && project.videos.length > 0 ? project.videos[0] : null,
+      projectName: project?.teaserName,
+      companyName: project?.companyName,
+      customerName: orderForm.name,
+      customerBrand: orderForm.brand,
+      customerPhone: orderForm.phone,
+      customerEmail: orderForm.email,
+      description: orderForm.message
+    };
+
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/orders`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setIsOrderSubmitted(true);
+      } else {
+        alert(data.message || 'خطا در ثبت سفارش.');
+      }
+    } catch (error) {
+      console.error(error);
+      alert('خطا در برقراری ارتباط با سرور.');
+    } finally {
+      setIsOrderSending(false);
+    }
+  };
 
   return (
     <>
@@ -254,6 +359,15 @@ export default function ProjectDetailsPage() {
       {isLoading ? (
         <div className="w-full h-screen bg-black flex items-center justify-center" style={{ display: isPreloading ? 'none' : 'flex' }}>
           <div className="w-12 h-12 border-2 border-zinc-800 border-t-white rounded-full animate-spin" />
+        </div>
+      ) : !project ? (
+        /* 🚀 گارد محافظتی: نمایش پیام تمیز به جای کرش صفحه */
+        <div className="w-full min-h-screen bg-black flex flex-col items-center justify-center text-center px-4" style={{ fontFamily: persianFontFamily }}>
+          <h2 className="text-2xl md:text-4xl font-bold text-white mb-4">پروژه مورد نظر یافت نشد</h2>
+          <p className="text-zinc-500 text-sm md:text-base mb-8">ممکن است این نمونه‌کار حذف شده یا آدرس آن تغییر کرده باشد.</p>
+          <Link href="/works" className="px-8 py-3.5 bg-white text-black font-bold rounded-full hover:bg-zinc-200 transition-colors text-sm">
+            مشاهده تمام نمونه‌کارها
+          </Link>
         </div>
       ) : (
         <div ref={pageRef} className="relative w-full overflow-clip opacity-0" style={{ backgroundColor: globalBgColor }}>
@@ -330,7 +444,6 @@ export default function ProjectDetailsPage() {
             .burger-line-2.open { opacity: 0; }
             .burger-line-3.open { transform: translateY(calc(var(--header-burger-trans) * -1)) rotate(-45deg); }
 
-            /* 🚀 فیکس شدن بیرون‌زدگی ویدیوها در موبایل */
             .player-wrapper {
               width: 100%;
               max-width: ${playerMaxWidth};
@@ -377,7 +490,6 @@ export default function ProjectDetailsPage() {
             </div>
           </header>
 
-          {/* 🎯 منو موبایل و دسکتاپ دقیقاً سینک شده با هوم‌پیج */}
           <AnimatePresence>
             {mobileMenuOpen && (
               <motion.div 
@@ -484,11 +596,10 @@ export default function ProjectDetailsPage() {
             )}
           </AnimatePresence>
 
-          <section ref={detailsSectionRef} className="w-full bg-black relative z-10 pt-[150px] md:pt-[200px] pb-32" dir="rtl" style={{ fontFamily: persianFontFamily }}>
+          <section ref={detailsSectionRef} className="w-full bg-black relative z-10 pt-[150px] md:pt-[200px] pb-16 md:pb-32" dir="rtl" style={{ fontFamily: persianFontFamily }}>
             <div className="max-w-[1700px] mx-auto px-6 md:px-12">
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
                 <div className="lg:col-span-4">
-                  {/* 🚀 اضافه شدن break-words برای جلوگیری از بیرون زدن متن */}
                   <motion.h2 initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-3xl md:text-4xl font-bold text-white tracking-tight sticky top-32 break-words" style={{ wordBreak: 'break-word' }}>
                     {project.companyName}
                   </motion.h2>
@@ -503,14 +614,10 @@ export default function ProjectDetailsPage() {
                     </p>
                   </motion.div>
 
-                  <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mt-24 mb-10 border-t border-zinc-800/80 pt-10">
-                    <h3 className="text-2xl md:text-3xl font-bold text-white uppercase tracking-widest" dir="ltr" style={{ textAlign: 'left', fontFamily: englishFontFamily }}>
-                      
-                    </h3>
-                  </motion.div>
+                  <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="mt-24 mb-10 border-t border-zinc-800/80 pt-10" />
 
                   <div className="flex flex-col w-full" style={{ gap: videoGap }}>
-                    {project.videos.map((vid, idx) => {
+                    {project.videos && project.videos.map((vid, idx) => {
                       const vidPoster = project.screenshots && project.screenshots[idx] 
                         ? `${process.env.NEXT_PUBLIC_BACKEND_URL}${project.screenshots[idx]}` 
                         : heroPoster;
@@ -530,6 +637,25 @@ export default function ProjectDetailsPage() {
                       </h2>
                     </motion.div>
                   )}
+                  
+                  {/* سکشن CTA ایستا */}
+                  <div className="w-full mt-24 md:mt-32 pt-16 border-t border-zinc-800/50 flex flex-col items-center justify-center text-center relative">
+                    <h3 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white mb-4 md:mb-6 tracking-tight">
+                      تجربه‌ای مشابه برای برند شما؟
+                    </h3>
+                    <p className="text-zinc-400 text-base md:text-lg lg:text-xl mb-8 md:mb-10 font-light max-w-2xl px-4 leading-relaxed">
+                      اگر این سبک از روایت و تصویرسازی مورد توجه شما قرار گرفته، ما آماده‌ایم تا ایده شما را به واقعیتی چشم‌گیر تبدیل کنیم.
+                    </p>
+                    
+                    <div className="relative group cursor-pointer" onClick={() => setIsOrderModalOpen(true)}>
+                      <div className="absolute -inset-2 bg-gradient-to-r from-zinc-500 to-zinc-700 rounded-full blur opacity-25 group-hover:opacity-60 transition duration-500 group-hover:duration-200"></div>
+                      <button className="relative flex items-center gap-4 px-8 py-4 md:px-10 md:py-5 bg-white text-black rounded-full font-bold text-base md:text-xl hover:scale-[1.02] transition-transform duration-300">
+                        <span>سفارش این محصول</span>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" dir="ltr"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                      </button>
+                    </div>
+                  </div>
+
                 </div>
               </div>
             </div>
@@ -572,52 +698,50 @@ export default function ProjectDetailsPage() {
                     className="flex overflow-x-auto hide-scrollbar snap-x snap-mandatory scroll-smooth"
                     style={{ gap: moreWorksCardGap, paddingBottom: '20px' }}
                   >
-                    {suggestedProjects.map((p) => {
-                      return (
-                        <Link
-                          href={`/works/${p.slug}`}
-                          key={p._id}
-                          className="flex-shrink-0 group cursor-pointer snap-start flex flex-col"
-                          style={{ width: moreWorksCardW }}
+                    {suggestedProjects.map((p) => (
+                      <Link
+                        href={`/works/${p.slug}`}
+                        key={p._id}
+                        className="flex-shrink-0 group cursor-pointer snap-start flex flex-col"
+                        style={{ width: moreWorksCardW }}
+                      >
+                        <div
+                          className="w-full bg-zinc-900 rounded-[20px] overflow-hidden"
+                          style={{ aspectRatio: moreWorksCardAspectRatio }}
                         >
+                          <video 
+                            src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${p.videos[0]}`}
+                            muted 
+                            loop 
+                            playsInline
+                            onMouseEnter={(e) => {
+                              e.currentTarget.currentTime = 0;
+                              e.currentTarget.play().catch(() => {});
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.pause();
+                              e.currentTarget.currentTime = 0;
+                            }}
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                          />
+                        </div>
+
+                        <div className="flex items-center gap-4 mt-6 text-white" style={{ fontFamily: englishFontFamily }}>
+                          <h4 className="font-bold text-xl md:text-2xl tracking-wide uppercase whitespace-nowrap">
+                            {p.companyName || p.slug.replace(/-/g, ' ')}
+                          </h4>
+
                           <div
-                            className="w-full bg-zinc-900 rounded-[20px] overflow-hidden"
-                            style={{ aspectRatio: moreWorksCardAspectRatio }}
-                          >
-                            <video 
-                              src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${p.videos[0]}`}
-                              muted 
-                              loop 
-                              playsInline
-                              onMouseEnter={(e) => {
-                                e.currentTarget.currentTime = 0;
-                                e.currentTarget.play().catch(() => {});
-                              }}
-                              onMouseLeave={(e) => {
-                                e.currentTarget.pause();
-                                e.currentTarget.currentTime = 0;
-                              }}
-                              className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                            />
-                          </div>
+                            className="h-[2px] bg-white/40 group-hover:bg-white transition-colors"
+                            style={{ width: moreWorksLineLength }}
+                          />
 
-                          <div className="flex items-center gap-4 mt-6 text-white" style={{ fontFamily: englishFontFamily }}>
-                            <h4 className="font-bold text-xl md:text-2xl tracking-wide uppercase whitespace-nowrap">
-                              {p.companyName || p.slug.replace(/-/g, ' ')}
-                            </h4>
-
-                            <div
-                              className="h-[2px] bg-white/40 group-hover:bg-white transition-colors"
-                              style={{ width: moreWorksLineLength }}
-                            />
-
-                            <span className="text-sm font-light text-zinc-300 whitespace-nowrap truncate" style={{ fontFamily: persianFontFamily }}>
-                              {p.teaserName}
-                            </span>
-                          </div>
-                        </Link>
-                      );
-                    })}
+                          <span className="text-sm font-light text-zinc-300 whitespace-nowrap truncate" style={{ fontFamily: persianFontFamily }}>
+                            {p.teaserName}
+                          </span>
+                        </div>
+                      </Link>
+                    ))}
                   </div>
 
                   <div className="flex items-center justify-between mt-10 pr-6 md:pr-12">
@@ -626,7 +750,7 @@ export default function ProjectDetailsPage() {
                         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
                       </button>
                       <button onClick={scrollRightNav} className="w-12 h-12 flex items-center justify-center text-white hover:text-zinc-400 transition-colors">
-                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 19"></polyline></svg>
                       </button>
                     </div>
 
@@ -646,9 +770,7 @@ export default function ProjectDetailsPage() {
             </section>
           )}
 
-          {/* =====================================================================
-              فوتر
-          ===================================================================== */}
+          {/* فوتر */}
           <section dir="ltr" className="w-full bg-[#111111] relative z-10">
             <footer className="flex flex-col md:flex-row min-h-[100px] items-center justify-between px-[4vw] py-10 gap-8 md:gap-0 border-t border-white/5">
               <div className="flex flex-col md:flex-row items-center gap-4 md:gap-10">
@@ -674,30 +796,9 @@ export default function ProjectDetailsPage() {
                 </button>
               </nav>
               <div className="about-footer-anim flex gap-6 md:gap-8 text-[11px] md:text-[13px] tracking-[0.2em] text-zinc-500 font-bold" style={{ fontFamily: englishFontFamily }}>
-                <a 
-                  href="https://www.instagram.com/c.studio.adv?igsh=OTIyMmR6MzduNHBk" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="hover:text-white cursor-pointer transition-colors"
-                >
-                  IG
-                </a>
-                <a 
-                  href="https://t.me/+989376303872" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="hover:text-white cursor-pointer transition-colors"
-                >
-                  TG
-                </a>
-                <a 
-                  href="https://wa.me/989376303872" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="hover:text-white cursor-pointer transition-colors"
-                >
-                  WA
-                </a>
+                <a href="https://www.instagram.com/c.studio.adv?igsh=OTIyMmR6MzduNHBk" target="_blank" rel="noopener noreferrer" className="hover:text-white cursor-pointer transition-colors">IG</a>
+                <a href="https://t.me/+989376303872" target="_blank" rel="noopener noreferrer" className="hover:text-white cursor-pointer transition-colors">TG</a>
+                <a href="https://wa.me/989376303872" target="_blank" rel="noopener noreferrer" className="hover:text-white cursor-pointer transition-colors">WA</a>
               </div>
               <div className="text-[10px] tracking-[0.12em] text-zinc-500 md:hidden mt-4 font-medium text-center" style={{ fontFamily: englishFontFamily }}>
                 © 2026 C STUDIO. ALL RIGHTS RESERVED.
@@ -705,12 +806,234 @@ export default function ProjectDetailsPage() {
             </footer>
           </section>
 
-          {/* 🚀 فرم تماس کشویی */}
           <ContactDrawer 
             isOpen={contactDrawerOpen} 
             onClose={() => setContactDrawerOpen(false)} 
             onOpenMenu={() => setMobileMenuOpen(true)} 
           />
+
+          {/* دراور سفارش */}
+          <AnimatePresence>
+            {isOrderModalOpen && (
+              <div className="fixed inset-0 z-[100] flex w-full h-full text-white bg-transparent overflow-hidden" dir="ltr" style={{ fontFamily: englishFontFamily }}>
+                <motion.div
+                  initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
+                  animate={{ opacity: 1, backdropFilter: 'blur(20px)' }}
+                  exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
+                  transition={{ duration: 0.8, ease: premiumEase }}
+                  className="fixed inset-0 bg-black/70 cursor-pointer z-10"
+                  onClick={() => setIsOrderModalOpen(false)}
+                />
+
+                <motion.div
+                  initial={{ x: '-100%' }}
+                  animate={{ x: 0 }}
+                  exit={{ x: '-100%' }}
+                  transition={{ duration: 0.8, ease: premiumEase }}
+                  className="relative w-full md:w-[60%] lg:w-[42%] h-full bg-[#030303] shadow-[30px_0_100px_rgba(0,0,0,0.9)] flex flex-col z-20 border-r border-white/10"
+                >
+                  <div className="w-full flex items-center justify-between py-6 px-6 md:px-10 shrink-0 border-b border-white/5">
+                    <button 
+                      onClick={() => setIsOrderModalOpen(false)}
+                      className="group flex items-center gap-3 text-zinc-500 hover:text-white transition-colors"
+                    >
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="transform transition-transform group-hover:-translate-x-1.5">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                      </svg>
+                      <span className="font-semibold tracking-[0.3em] text-[10px] uppercase">Close</span>
+                    </button>
+                    <div className="text-zinc-100 font-black tracking-[0.15em] text-xl md:text-2xl uppercase" style={{ fontFamily: englishFontFamily }}>
+                      ORDER PROJECT
+                    </div>
+                  </div>
+
+                  <div ref={orderScrollContainerRef} className="flex-1 w-full overflow-y-auto hide-scrollbar px-6 md:px-12 py-8 md:py-10" dir="rtl" style={{ fontFamily: persianFontFamily }}>
+                    <AnimatePresence mode="wait">
+                      {isOrderSubmitted ? (
+                        <motion.div 
+                          key="order-success"
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ duration: 0.8, ease: premiumEase }}
+                          className="flex flex-col items-center justify-center h-full text-center mt-20"
+                          dir="ltr"
+                        >
+                          <div className="relative mb-10">
+                            <motion.div 
+                              initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ duration: 0.8, ease: premiumEase }}
+                              className="w-24 h-24 rounded-full border border-zinc-800 flex items-center justify-center bg-zinc-900/20 backdrop-blur-md"
+                            >
+                              <svg viewBox="0 0 50 50" className="w-12 h-12">
+                                <motion.path
+                                  initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1, ease: premiumEase, delay: 0.3 }}
+                                  d="M15 26l7 7 14-14" fill="none" stroke="#ffffff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"
+                                />
+                              </svg>
+                            </motion.div>
+                          </div>
+                          <motion.h2 
+                            initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2, duration: 0.8, ease: premiumEase }}
+                            className="text-[32px] md:text-[45px] font-black tracking-tight leading-none mb-4 text-white"
+                          >
+                            REQUEST RECEIVED.
+                          </motion.h2>
+                          <motion.p 
+                            initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.3, duration: 0.8, ease: premiumEase }}
+                            className="text-zinc-400 text-sm md:text-base font-light mb-12 tracking-wide" dir="rtl" style={{ fontFamily: persianFontFamily }}
+                          >
+                            درخواست سفارش شما با موفقیت ثبت شد.<br/>به زودی برای مشاوره با شما تماس می‌گیریم.
+                          </motion.p>
+                          <motion.button 
+                            initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
+                            onClick={() => setIsOrderModalOpen(false)} 
+                            className="px-8 py-3 bg-white text-black rounded-full text-xs font-bold tracking-[0.25em] uppercase transition-all hover:bg-zinc-200"
+                          >
+                            Close
+                          </motion.button>
+                        </motion.div>
+                      ) : (
+                        <div className="flex flex-col gap-12 pb-16">
+                          
+                          {/* کارت محصول */}
+                          <div className="flex items-center gap-4 bg-[#0a0a0a] border border-white/5 rounded-2xl p-4 mb-2 relative overflow-hidden shadow-inner">
+                            <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-white/10 to-transparent"></div>
+                            
+                            <div className="w-[84px] h-[60px] bg-black border border-white/5 rounded-lg overflow-hidden relative flex-shrink-0 shadow-inner">
+                              <div className="absolute inset-0 flex items-center justify-center text-zinc-700">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                                  <rect x="2" y="2" width="20" height="20" rx="2.5" ry="2.5"></rect>
+                                  <polygon points="10 8 16 12 10 16 10 8"></polygon>
+                                </svg>
+                              </div>
+                              
+                              {project.videos && project.videos[0] ? (
+                                <video 
+                                  src={`${process.env.NEXT_PUBLIC_BACKEND_URL}${project.videos[0]}#t=0.1`} 
+                                  preload="metadata" 
+                                  muted 
+                                  playsInline 
+                                  className="absolute inset-0 w-full h-full object-cover z-10" 
+                                  onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                                />
+                              ) : heroPoster ? (
+                                <img src={heroPoster} alt={project.teaserName} className="absolute inset-0 w-full h-full object-cover z-10" />
+                              ) : null}
+                            </div>
+                            
+                            <div className="flex flex-col overflow-hidden z-10">
+                              <span className="text-[11px] text-zinc-500 mb-1 tracking-wider">پروژه درخواستی شما:</span>
+                              <span className="text-sm md:text-base text-white font-bold truncate">{project.teaserName}</span>
+                            </div>
+                          </div>
+
+                          {/* مرحله ۱ */}
+                          <div className={`flex flex-col gap-5 transition-opacity duration-300 focus-within:opacity-100 ${orderStep > 1 ? 'opacity-35 hover:opacity-100' : 'opacity-100'}`}>
+                            <div className="flex items-center gap-3">
+                              <span className="text-zinc-600 font-mono text-sm">01</span>
+                              <h3 className="text-zinc-200 text-lg md:text-xl font-medium tracking-wide">نام و نشان شما</h3>
+                            </div>
+                            <div className="flex flex-col md:flex-row gap-5">
+                              <input 
+                                type="text" name="name" value={orderForm.name} onChange={handleOrderChange} onKeyDown={(e) => handleOrderKeyDown(e, 2)}
+                                className="flex-1 bg-transparent border-b border-zinc-800 focus:border-white text-white text-base md:text-lg py-2.5 focus:outline-none placeholder:text-zinc-700 transition-colors font-light"
+                                placeholder="نام و نام خانوادگی *"
+                              />
+                              <input 
+                                type="text" name="brand" value={orderForm.brand} onChange={handleOrderChange} onKeyDown={(e) => handleOrderKeyDown(e, 2)}
+                                className="flex-1 bg-transparent border-b border-zinc-800 focus:border-white text-white text-base md:text-lg py-2.5 focus:outline-none placeholder:text-zinc-700 transition-colors font-light"
+                                placeholder="نام برند یا شرکت"
+                              />
+                            </div>
+                            {orderStep === 1 && (
+                              <button 
+                                onClick={() => nextOrderStep(2)} disabled={!isOrderNameValid}
+                                className="self-end px-6 py-2.5 bg-white text-black rounded-full font-semibold text-xs tracking-wider uppercase disabled:opacity-20 disabled:cursor-not-allowed transition-all hover:bg-zinc-200"
+                              >
+                                تایید و ادامه
+                              </button>
+                            )}
+                          </div>
+
+                          {/* مرحله ۲ */}
+                          {orderStep >= 2 && (
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: premiumEase }} className={`flex flex-col gap-5 transition-opacity duration-300 focus-within:opacity-100 ${orderStep > 2 ? 'opacity-35 hover:opacity-100' : 'opacity-100'}`}>
+                              <div className="flex items-center gap-3">
+                                <span className="text-zinc-600 font-mono text-sm">02</span>
+                                <h3 className="text-zinc-200 text-lg md:text-xl font-medium tracking-wide">راه‌های ارتباطی</h3>
+                              </div>
+                              <div className="flex flex-col md:flex-row gap-5">
+                                <div className="flex-1">
+                                  <input 
+                                    type="tel" name="phone" dir="ltr" value={orderForm.phone} onChange={handleOrderChange} onKeyDown={(e) => handleOrderKeyDown(e, 3)}
+                                    className={`w-full bg-transparent border-b ${orderForm.phone.trim() !== '' && !isOrderPhoneValid ? 'border-red-500/50' : 'border-zinc-800'} focus:border-white text-white text-base md:text-lg py-2.5 focus:outline-none placeholder:text-zinc-700 transition-colors text-right font-light`}
+                                    placeholder="شماره موبایل *"
+                                  />
+                                  {orderForm.phone.trim() !== '' && !isOrderPhoneValid && (
+                                    <p className="text-red-500/70 text-xs mt-1">فرمت موبایل صحیح نیست (مثال: 09120000000)</p>
+                                  )}
+                                </div>
+                                <div className="flex-1">
+                                  <input 
+                                    type="email" name="email" dir="ltr" value={orderForm.email} onChange={handleOrderChange} onKeyDown={(e) => handleOrderKeyDown(e, 3)}
+                                    className={`w-full bg-transparent border-b ${orderForm.email.trim() !== '' && !isOrderEmailValid ? 'border-red-500/50' : 'border-zinc-800'} focus:border-white text-white text-base md:text-lg py-2.5 focus:outline-none placeholder:text-zinc-700 transition-colors text-right font-light`}
+                                    placeholder="آدرس ایمیل"
+                                  />
+                                  {orderForm.email.trim() !== '' && !isOrderEmailValid && (
+                                    <p className="text-red-500/70 text-xs mt-1">فرمت ایمیل صحیح نیست</p>
+                                  )}
+                                </div>
+                              </div>
+                              {orderStep === 2 && (
+                                <button 
+                                  onClick={() => nextOrderStep(3)} disabled={!isOrderPhoneValid || !isOrderEmailValid}
+                                  className="self-end px-6 py-2.5 bg-white text-black rounded-full font-semibold text-xs tracking-wider uppercase disabled:opacity-20 disabled:cursor-not-allowed transition-all hover:bg-zinc-200"
+                                >
+                                  مرحله آخر
+                                </button>
+                              )}
+                            </motion.div>
+                          )}
+
+                          {/* مرحله ۳ */}
+                          {orderStep >= 3 && (
+                            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, ease: premiumEase }} className="flex flex-col gap-5">
+                              <div className="flex items-center gap-3">
+                                <span className="text-zinc-600 font-mono text-sm">03</span>
+                                <h3 className="text-zinc-200 text-lg md:text-xl font-medium tracking-wide">توضیحات تکمیلی</h3>
+                              </div>
+                              <textarea 
+                                name="message" value={orderForm.message} onChange={handleOrderChange}
+                                rows={3}
+                                className="w-full bg-transparent border-b border-zinc-800 focus:border-white text-white text-base py-2.5 focus:outline-none placeholder:text-zinc-700 transition-colors resize-none font-light leading-relaxed"
+                                placeholder="نیازهای خاص برند خود را بنویسید..."
+                              />
+                              
+                              <div className="flex justify-end pt-4">
+                                <button 
+                                  onClick={handleOrderSubmit} 
+                                  disabled={!isOrderNameValid || !isOrderPhoneValid || !isOrderEmailValid || isOrderSending}
+                                  className="px-8 py-3.5 bg-white text-black rounded-full font-bold text-sm tracking-wider uppercase disabled:opacity-20 disabled:cursor-not-allowed transition-all flex items-center gap-2.5 hover:bg-zinc-200 shadow-[0_0_25px_rgba(255,255,255,0.15)]"
+                                >
+                                  {isOrderSending ? (
+                                    <><span className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin"></span> در حال ارسال</>
+                                  ) : (
+                                    'ثبت نهایی سفارش'
+                                  )}
+                                </button>
+                              </div>
+                            </motion.div>
+                          )}
+
+                        </div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                </motion.div>
+              </div>
+            )}
+          </AnimatePresence>
+
         </div>
       )}
     </>

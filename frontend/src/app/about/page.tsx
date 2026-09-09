@@ -8,7 +8,6 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Preloader from '@/components/Preloader';
 import ContactDrawer from '@/components/ContactDrawer';
 
-// 🎯 وارد کردن فونت‌های گوگل
 import { orbitronFont, outfitFont } from '@/app/fonts';
 
 gsap.registerPlugin(ScrollTrigger);
@@ -21,7 +20,6 @@ const solidBlackColor = "#000000";
 const persianFontFamily = '"AzarMehr", "OpenAI Sans", sans-serif'; 
 const englishFontFamily = '"Outfit", sans-serif'; 
 
-// 🎛️ تنظیمات هدر و منوی همبرگری - کاملاً سینک با هوم‌پیج
 const cColor = "#888888";                
 const studioColor = "#FFFFFF";           
 const logoHoverColor = "#FFFFFF";        
@@ -65,9 +63,6 @@ const navLinks = [
   { name: 'پنل مدیریت', href: '/auth' },
 ];
 
-// 🎛️===================================================================🎛️
-//                   دیتای خدمات برای تونل افقی
-// 🎛️===================================================================🎛️
 const servicesData = [
   { num: "01", fa: "تیزر تبلیغاتی", en: "TEASTER", video: "/k1.mp4", poster: "/poster1.jpg", desc: "خلق ویدیوهای سینمایی و مفهومی با کیفیت تصویر فوق‌العاده برای نمایش شکوه برند شما." },
   { num: "02", fa: "تولید محتوا", en: "CONTENT", video: "/k2.mp4", poster: "/poster2.jpg", desc: "استراتژی و تولید محتوای وایرال که صدای برند شما را به گوش هزاران نفر می‌رساند." }, 
@@ -86,7 +81,6 @@ export default function AboutPage() {
   const horizontalSectionRef = useRef<HTMLElement>(null);
   const horizontalContainerRef = useRef<HTMLDivElement>(null);
 
-  // 🔒 قفل اسکرول هنگام باز بودن منو یا دراور
   useEffect(() => {
     if (mobileMenuOpen || contactDrawerOpen) {
       document.body.style.overflow = 'hidden';
@@ -154,7 +148,6 @@ export default function AboutPage() {
 
         let mm = gsap.matchMedia();
 
-        // 🎯 انیمیشن اسکرول افقی پین شده فقط برای دسکتاپ
         mm.add("(min-width: 769px)", () => {
           const hzSection = horizontalSectionRef.current;
           const hzContainer = horizontalContainerRef.current;
@@ -207,7 +200,8 @@ export default function AboutPage() {
   }, []);
 
   return (
-    <div ref={mainContainerRef} className="relative w-full overflow-x-clip" style={{ backgroundColor: globalBgColor }}>
+    // 🚀 تغییر از overflow-x-clip به overflow-hidden و کنترل دقیق عرض برای جلوگیری از باگ اسکرول آیفون
+    <div ref={mainContainerRef} className="relative w-full max-w-[100vw] overflow-hidden" style={{ backgroundColor: globalBgColor }}>
       
       <style jsx global>{`
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&display=swap');
@@ -304,9 +298,7 @@ export default function AboutPage() {
 
       <Preloader />
 
-      {/* =====================================================================
-          هدر و منوی همبرگری - دقیقاً مثل هوم‌پیج
-      ===================================================================== */}
+      {/* هدر */}
       <header ref={headerRef} className="fixed top-0 left-0 w-full z-50 h-[80px] md:h-[100px] bg-transparent" dir="ltr">
         <div className="w-full relative h-full">
           <div className="absolute transition-all duration-500 z-[60]" style={{ left: "var(--header-logo-left)", top: "var(--header-logo-top)" }}>
@@ -332,7 +324,7 @@ export default function AboutPage() {
         </div>
       </header>
 
-      {/* 🌟 منوی تمام‌صفحه - سینک شده با هوم‌پیج */}
+      {/* منوی موبایل */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div 
@@ -405,31 +397,11 @@ export default function AboutPage() {
                   SOCIAL
                 </div>
                 <div className="flex gap-4">
-                  <a 
-                    href="https://www.instagram.com/c.studio.adv?igsh=OTIyMmR6MzduNHBk" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="w-10 h-10 md:w-12 md:h-12 rounded-full border border-zinc-700 flex items-center justify-center text-white hover:bg-white hover:text-black transition-colors"
-                    aria-label="Instagram"
-                  >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                    </svg>
+                  <a href="https://www.instagram.com/c.studio.adv?igsh=OTIyMmR6MzduNHBk" target="_blank" rel="noopener noreferrer" className="w-10 h-10 md:w-12 md:h-12 rounded-full border border-zinc-700 flex items-center justify-center text-white hover:bg-white hover:text-black transition-colors" aria-label="Instagram">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
                   </a>
-
-                  <a 
-                    href="https://t.me/+989376303872" 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="w-10 h-10 md:w-12 md:h-12 rounded-full border border-zinc-700 flex items-center justify-center text-white hover:bg-white hover:text-black transition-colors"
-                    aria-label="Telegram"
-                  >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <line x1="22" y1="2" x2="11" y2="13"></line>
-                      <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                    </svg>
+                  <a href="https://t.me/+989376303872" target="_blank" rel="noopener noreferrer" className="w-10 h-10 md:w-12 md:h-12 rounded-full border border-zinc-700 flex items-center justify-center text-white hover:bg-white hover:text-black transition-colors" aria-label="Telegram">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                   </a>
                 </div>
               </motion.div>
@@ -441,13 +413,16 @@ export default function AboutPage() {
 
       <main>
         {/* =====================================================================
-            هیرو - ۳ خطی و کاملاً متقارن در موبایل
+            هیرو - استفاده از 100dvh و Hardware Acceleration برای رفع کرش آیفون
         ===================================================================== */}
-        <section id="about-hero" className="relative w-full min-h-screen flex items-center justify-center overflow-hidden bg-[#050505] pt-24 pb-20 md:pb-32 px-4 md:px-12">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] md:w-[50vw] md:h-[50vw] rounded-full bg-zinc-900/30 blur-[120px] pointer-events-none" />
+        <section id="about-hero" className="relative w-full min-h-[100dvh] flex items-center justify-center overflow-hidden bg-[#050505] pt-24 pb-20 md:pb-32 px-4 md:px-12">
+          {/* 🚀 بلور کاهش یافته برای موبایل و قفل شده در GPU */}
+          <div 
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120vw] h-[120vw] md:w-[50vw] md:h-[50vw] rounded-full bg-zinc-900/30 blur-[60px] md:blur-[120px] pointer-events-none" 
+            style={{ transform: 'translate3d(0,0,0)', willChange: 'filter' }} 
+          />
           
           <div className="relative z-10 w-full max-w-[1700px] mx-auto flex flex-col items-center">
-            
             <div className="mb-6 md:mb-10 overflow-hidden">
               <p className="hero-desc-fade text-zinc-500 tracking-[0.3em] text-[12px] md:text-[16px] font-bold uppercase" style={{ fontFamily: englishFontFamily }}>
                 Who We Are
@@ -456,17 +431,17 @@ export default function AboutPage() {
 
             <div className="flex flex-col items-center text-center w-full">
               <div className="overflow-hidden">
-                <h1 className="hero-title-word text-[#f2f2f2] font-black uppercase leading-[0.9] tracking-[-0.02em] text-[clamp(46px,11.5vw,220px)] whitespace-nowrap" style={{ fontFamily: englishFontFamily }}>
+                <h1 className="hero-title-word text-[#f2f2f2] font-black uppercase leading-[0.9] tracking-[-0.02em] text-[clamp(38px,11vw,220px)] md:text-[clamp(46px,11.5vw,220px)] whitespace-nowrap" style={{ fontFamily: englishFontFamily }}>
                   WE BREATHE
                 </h1>
               </div>
               <div className="overflow-hidden mt-1 md:mt-0">
-                <h1 className="hero-title-word text-[#f2f2f2] font-black uppercase leading-[0.9] tracking-[-0.02em] text-[clamp(46px,11.5vw,220px)] whitespace-nowrap" style={{ fontFamily: englishFontFamily }}>
+                <h1 className="hero-title-word text-[#f2f2f2] font-black uppercase leading-[0.9] tracking-[-0.02em] text-[clamp(38px,11vw,220px)] md:text-[clamp(46px,11.5vw,220px)] whitespace-nowrap" style={{ fontFamily: englishFontFamily }}>
                   LIFE INTO
                 </h1>
               </div>
               <div className="overflow-hidden mt-1 md:mt-0">
-                <h1 className="hero-title-word text-zinc-600 font-black uppercase leading-[0.9] tracking-[-0.02em] text-[clamp(46px,11.5vw,220px)] whitespace-nowrap" style={{ fontFamily: englishFontFamily }}>
+                <h1 className="hero-title-word text-zinc-600 font-black uppercase leading-[0.9] tracking-[-0.02em] text-[clamp(38px,11vw,220px)] md:text-[clamp(46px,11.5vw,220px)] whitespace-nowrap" style={{ fontFamily: englishFontFamily }}>
                   BRANDS
                 </h1>
               </div>
@@ -478,18 +453,18 @@ export default function AboutPage() {
                 ما در <strong className="text-white font-bold tracking-wider" style={{ fontFamily: englishFontFamily }}>C STUDIO</strong> مرزهای خلاقیت را جابجا می‌کنیم تا تجربه‌های دیجیتالی بسازیم که نه تنها دیده شوند، بلکه در ذهن‌ها حک شوند.
               </p>
             </div>
-
           </div>
         </section>
 
         {/* =====================================================================
-            پارالاکس - رفع باگ فرمت تصویر
+            پارالاکس - رندرینگ اختصاصی با GPU
         ===================================================================== */}
-        <section className="relative w-full h-[50vh] md:h-[80vh] overflow-hidden bg-[#111111] parallax-container">
+        <section className="relative w-full h-[50dvh] md:h-[80vh] overflow-hidden bg-[#111111] parallax-container">
           <img 
             src="/AB.jpg" 
             alt="C Studio Office" 
             className="parallax-img absolute top-[-20%] left-0 w-full h-[140%] object-cover grayscale opacity-60"
+            style={{ transform: 'translate3d(0,0,0)', willChange: 'transform' }} // 🚀 جلوگیری از پرش تصویر در سافاری
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#111111] via-transparent to-transparent" />
         </section>
@@ -538,14 +513,12 @@ export default function AboutPage() {
         </section>
 
         {/* =====================================================================
-            تونل افقی - دسکتاپ پین شده / موبایل اسکرول لمسی و نیتیو
+            تونل افقی - دسکتاپ
         ===================================================================== */}
-        
-        {/* 💻 نسخه دسکتاپ (بدون تغییر) */}
-        <section id="horizontal-services" ref={horizontalSectionRef} className="hidden md:block relative w-full h-screen bg-[#111111] overflow-hidden" dir="ltr">
+        <section id="horizontal-services" ref={horizontalSectionRef} className="hidden md:block relative w-full h-[100dvh] bg-[#111111] overflow-hidden" dir="ltr">
           <div ref={horizontalContainerRef} className="flex h-full w-fit flex-nowrap items-center">
             
-            <div className="hz-panel-desk w-screen h-screen flex-shrink-0 flex flex-col items-center justify-center relative px-6">
+            <div className="hz-panel-desk w-screen h-[100dvh] flex-shrink-0 flex flex-col items-center justify-center relative px-6">
               <h2 className="text-white font-black text-center text-[clamp(60px,13vw,250px)] uppercase tracking-tighter leading-[1]" style={{ fontFamily: englishFontFamily }}>
                 OUR EXPERTISE
               </h2>
@@ -555,7 +528,7 @@ export default function AboutPage() {
             </div>
 
             {servicesData.map((item, index) => (
-              <div key={index} className="hz-panel-desk w-screen h-screen flex-shrink-0 relative flex items-center justify-center overflow-hidden">
+              <div key={index} className="hz-panel-desk w-screen h-[100dvh] flex-shrink-0 relative flex items-center justify-center overflow-hidden">
                 
                 <div className="hz-video-wrapper relative w-[60vw] lg:w-[45vw] h-[65vh] overflow-hidden rounded-[40px] shadow-2xl shadow-black">
                   <video 
@@ -566,6 +539,7 @@ export default function AboutPage() {
                     muted 
                     playsInline 
                     className="absolute inset-0 w-full h-full object-cover opacity-80"
+                    style={{ transform: 'translate3d(0,0,0)', willChange: 'transform' }} // 🚀 GPU Hardware Acceleration
                   />
                   <div className="absolute inset-0 bg-black/20" />
                 </div>
@@ -584,14 +558,15 @@ export default function AboutPage() {
                     {item.desc}
                   </p>
                 </div>
-
               </div>
             ))}
 
           </div>
         </section>
 
-        {/* 📱 نسخه موبایل - اسکرول لمسی و ارگونومیک بدون قفل شدن صفحه */}
+        {/* =====================================================================
+            تونل افقی موبایل - سبک‌سازی شده برای iOS
+        ===================================================================== */}
         <section className="block md:hidden w-full bg-[#111111] py-16 overflow-hidden" dir="ltr">
           <div className="px-6 mb-8 text-center">
             <h2 className="text-white font-black text-4xl uppercase tracking-tighter" style={{ fontFamily: englishFontFamily }}>
@@ -613,12 +588,14 @@ export default function AboutPage() {
                     loop 
                     muted 
                     playsInline 
+                    preload="auto"
                     className="absolute inset-0 w-full h-full object-cover opacity-80"
+                    style={{ transform: 'translate3d(0,0,0)', willChange: 'transform' }} // 🚀 کلید طلایی رفع کرش وب‌کیت در آیفون
                   />
-                  <div className="absolute inset-0 bg-black/30" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90" />
+                  <div className="absolute inset-0 bg-black/30 pointer-events-none" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90 pointer-events-none" />
                   
-                  <div className="absolute bottom-4 left-4 right-4 z-20" dir="rtl">
+                  <div className="absolute bottom-4 left-4 right-4 z-20 pointer-events-none" dir="rtl">
                     <div className="flex items-center gap-3 mb-2">
                       <span className="text-zinc-400 font-mono text-sm" dir="ltr">{item.num}</span>
                       <div className="h-[2px] w-[20px] bg-zinc-600" />
@@ -636,9 +613,7 @@ export default function AboutPage() {
 
       </main>
 
-      {/* =====================================================================
-          فوتر
-      ===================================================================== */}
+      {/* فوتر */}
       <section dir="ltr" className="w-full bg-[#111111] relative z-10">
         <footer className="flex flex-col md:flex-row min-h-[100px] items-center justify-between px-[4vw] py-10 gap-8 md:gap-0 border-t border-white/5">
           <div className="flex flex-col md:flex-row items-center gap-4 md:gap-10">
@@ -664,30 +639,9 @@ export default function AboutPage() {
             </button>
           </nav>
           <div className="flex gap-6 md:gap-8 text-[11px] md:text-[13px] tracking-[0.2em] text-zinc-500 font-bold" style={{ fontFamily: englishFontFamily }}>
-            <a 
-              href="https://www.instagram.com/c.studio.adv?igsh=OTIyMmR6MzduNHBk" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="hover:text-white cursor-pointer transition-colors"
-            >
-              IG
-            </a>
-            <a 
-              href="https://t.me/+989376303872" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="hover:text-white cursor-pointer transition-colors"
-            >
-              TG
-            </a>
-            <a 
-              href="https://wa.me/989376303872" 
-              target="_blank" 
-              rel="noopener noreferrer" 
-              className="hover:text-white cursor-pointer transition-colors"
-            >
-              WA
-            </a>
+            <a href="https://www.instagram.com/c.studio.adv?igsh=OTIyMmR6MzduNHBk" target="_blank" rel="noopener noreferrer" className="hover:text-white cursor-pointer transition-colors">IG</a>
+            <a href="https://t.me/+989376303872" target="_blank" rel="noopener noreferrer" className="hover:text-white cursor-pointer transition-colors">TG</a>
+            <a href="https://wa.me/989376303872" target="_blank" rel="noopener noreferrer" className="hover:text-white cursor-pointer transition-colors">WA</a>
           </div>
           <div className="text-[10px] tracking-[0.12em] text-zinc-500 md:hidden mt-4 font-medium text-center" style={{ fontFamily: englishFontFamily }}>
             © 2026 C STUDIO. ALL RIGHTS RESERVED.
@@ -695,7 +649,7 @@ export default function AboutPage() {
         </footer>
       </section>
 
-      {/* 🚀 فرم تماس کشویی */}
+      {/* فرم تماس کشویی */}
       <ContactDrawer 
         isOpen={contactDrawerOpen} 
         onClose={() => setContactDrawerOpen(false)} 
