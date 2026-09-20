@@ -95,7 +95,7 @@ const heroWordsInset = "clamp(28px, 2.5vw, 48px)";
 const heroWordsBottom = "clamp(28px, 2.24vw, 43px)";
 const heroWordsTransitionSpeed = "0.5s";
 
-const animDuration = 0.8;
+const animDuration = 0.55;
 const preloaderDuration = 3;             
 const waitAfterPreload = 2;              
 const startDelay = preloaderDuration + waitAfterPreload; 
@@ -168,16 +168,21 @@ const servicesOverlayHoverOpacity = 0.1;
 const mobServiceBoxWidth = "340px";          
 const mobServiceBoxHeight = "400px";         
 const mobServiceGapY = "4vh";                
-const mobServiceWallOffset = -30;            
+const mobServiceWallOffset = -75;            
 const mobServiceTextWord = "SERVICES";       
-const mobServiceTextFontSize = "55px";       
+const mobServiceTextAdvanceEm = 4.653;       // مجموع عرض حروف SERVICES بر حسب em (از خود فونت Outfit)
+const mobServiceTextHeightRatio = 0.95;      // ارتفاع کلمه نسبت به ارتفاع باکس
+const mobServiceTextScaleX = 1.25;           // پهن‌تر کردن حروف بدون بلندتر شدن کلمه
+const mobServiceTextLineHeight = 0.75;
+const mobServiceTextSideGap = 12;       
 const mobServiceTextColor = "#d1d1d1";       
-const mobServiceTextLetterSpacing = "0.1em"; 
+const mobServiceTextLetterSpacing = "0.04em"; 
 const mobServiceTextGap = 0;                 
-const mobServiceTextTop = "44%";             
+const mobServiceTextTop = "50%";             
 const mobServiceTextYPercent = -50;          
-const mobServiceTextOffsetX = -7;            
+const mobServiceTextOffsetX = 0;            
 const mobServiceTextOffsetY = 0;             
+const mobServiceTextMoveY = -36;             // حرکت رو به بالا در انیمیشن (شمال‌شرقی)
 const mobServiceTextMoveX = 300;             
 const mobServiceTextFadeTarget = 1;          
 const mobServiceBoxEase = "power3.out";      
@@ -263,16 +268,23 @@ const mobWorksBox1Height = "480px";
 const mobWorksOtherBoxWidth = "340px";      
 const mobWorksOtherBoxHeight = "380px";     
 const mobWorksGapY = "0vh";                 
-const mobWorksWallVisible = 300;            
+const mobWorksWallVisible = 200;            
 const mobWorksTextWord = "WORK";            
-const mobWorksTextFontSize = "80px";       
+const mobWorksTextAdvanceEm = 3.12;          // مجموع عرض حروف WORK بر حسب em (از خود فونت Outfit)
+const mobWorksTextHeightRatio = 0.95;        // ارتفاع کلمه نسبت به ارتفاع باکس
+const mobWorksTextScaleX = 1.12;
+const mobWorksTextLineHeight = 0.75;
+const mobWorksTextSideGapVw = 0.07;         // فاصله‌ی کلمه از لبه و از باکس (نسبت به عرض صفحه)       
 const mobWorksTextColor = "#FFFFFF";        
-const mobWorksTextLetterSpacing = "0.1em";  
-const mobWorksTextGap = 120;                 
-const mobWorksTextOffsetX = 120;            
-const mobWorksTextTop = "30%";              
+const mobWorksTextLetterSpacing = "0.1em";
+const mobWorksTextFontSizePx = parseInt(mobWorksBox1Height) * mobWorksTextHeightRatio / (mobWorksTextAdvanceEm + 4 * 0.1);
+const mobServiceTextFontSizePx = parseInt(mobServiceBoxHeight) * mobServiceTextHeightRatio / (mobServiceTextAdvanceEm + 8 * 0.04);  
+const mobWorksTextGap = 0;                 
+const mobWorksTextOffsetX = 0;            
+const mobWorksTextTop = "41%";              
 const mobWorksTextYPercent = -50;           
-const mobWorksTextOffsetY = 40;             
+const mobWorksTextOffsetY = 0;             
+const mobWorksTextMoveY = -36;               // حرکت رو به بالا در انیمیشن (شمال‌غربی)
 const mobWorksTextMoveX = -180;             
 const mobWorksTextFadeTarget = 0;           
 const mobWorksBoxEase = "power3.out";       
@@ -592,7 +604,7 @@ export default function Page() {
 
         const masterHero = gsap.timeline({ paused: isMobView });
 
-        masterHero.fromTo(maskRef.current, { scale: 1.01 }, { scale: 1, duration: 1.4, ease: "power3.out" }, isMobView ? 0 : startDelay - 0.2);
+        masterHero.fromTo(maskRef.current, { scale: 1.01 }, { scale: 1, duration: 1.0, ease: "power3.out" }, isMobView ? 0 : startDelay - 0.2);
 
         const tlHero = gsap.timeline();
         tlHero.to(blackOverlayRef.current, { opacity: 0, duration: 0.4, ease: "power2.out" }, 0)
@@ -603,7 +615,7 @@ export default function Page() {
         
         masterHero.add(tlHero, isMobView ? 0.2 : startDelay);
 
-        masterHero.fromTo([doRef.current, thingsRef.current], { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 1.2, stagger: 0.2, ease: "power4.out" }, isMobView ? 1.2 : startDelay + 1);
+        masterHero.fromTo([doRef.current, thingsRef.current], { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, stagger: 0.12, ease: "power4.out" }, isMobView ? 0.9 : startDelay + 0.7);
 
         heroAnimsRef.current.push(masterHero);
 
@@ -715,14 +727,21 @@ export default function Page() {
             const boxWidth = parseInt(mobServiceBoxWidth); 
             
             if (i === 0 && text) {
-              const startX = - (window.innerWidth / 2) + mobServiceWallOffset + (boxWidth / 2);
+              // چیدمان ریسپانسیو: باکس تا حد امکان به گوشه‌ی چپ می‌چسبد و کلمه با فاصله‌ی ثابت نسبت به لبه‌ی راست کنارش می‌نشیند
+              const vw = window.innerWidth;
+              const svcFs = mobServiceTextFontSizePx;
+              const svcGlyphW = svcFs * 0.7 * mobServiceTextScaleX;
+              const svcLayoutW = svcFs * mobServiceTextLineHeight;
+              const svcWall = Math.min(-20, vw - vw * 0.12 - svcGlyphW - vw * 0.05 - boxWidth);
+              const svcTextX = mobServiceTextOffsetX + (svcGlyphW - svcLayoutW) / 2 + mobServiceTextSideGap;
+              const startX = - (vw / 2) + svcWall + (boxWidth / 2);
               gsap.set(elements, { xPercent: -50, x: startX });
-              gsap.set(text, { x: mobServiceTextOffsetX, y: mobServiceTextOffsetY, yPercent: mobServiceTextYPercent, opacity: 1 });
+              gsap.set(text, { x: svcTextX, y: mobServiceTextOffsetY, yPercent: mobServiceTextYPercent, opacity: 1 });
 
               const tl = gsap.timeline({ scrollTrigger: { trigger: wrapper, start: mobServiceScrollStart, end: mobServiceScrollEnd, scrub: mobServiceScrub } });
               
               tl.to(elements, { x: 0, xPercent: -50, duration: mobServiceBoxSpeed, ease: mobServiceBoxEase }, 0)
-                .to(text, { x: mobServiceTextOffsetX + mobServiceTextMoveX, opacity: mobServiceTextFadeTarget, duration: mobServiceTextSpeed, ease: mobServiceTextEase }, 0); 
+                .to(text, { x: svcTextX + mobServiceTextMoveX, y: mobServiceTextOffsetY + mobServiceTextMoveY, opacity: mobServiceTextFadeTarget, duration: mobServiceTextSpeed, ease: mobServiceTextEase }, 0); 
                 
             } else {
               const startX = - (window.innerWidth / 2) + mobServiceRestStartX + (boxWidth / 2);
@@ -742,14 +761,22 @@ export default function Page() {
             const boxWidth = i === 0 ? parseInt(mobWorksBox1Width) : parseInt(mobWorksOtherBoxWidth);
             
             if (i === 0 && text) {
-              const startX = (window.innerWidth / 2) - mobWorksWallVisible + (boxWidth / 2);
+              // چیدمان ریسپانسیو: کلمه با فاصله‌ی ثابت از لبه‌ی چپ می‌نشیند و باکس بلافاصله کنارش شروع می‌شود (مثل BBDO)
+              const vw = window.innerWidth;
+              const wrkFs = mobWorksTextFontSizePx;
+              const wrkGlyphW = wrkFs * 0.7 * mobWorksTextScaleX;
+              const wrkLayoutW = wrkFs * mobWorksTextLineHeight;
+              const wrkGap = vw * mobWorksTextSideGapVw;
+              const wrkBoxLeft = wrkGap + wrkGlyphW + wrkGap;
+              const wrkTextX = mobWorksTextOffsetX - wrkGap - (wrkGlyphW - wrkLayoutW) / 2;
+              const startX = (vw / 2) - (vw - wrkBoxLeft) + (boxWidth / 2);
               gsap.set(elements, { xPercent: -50, x: startX });
-              gsap.set(text, { x: mobWorksTextOffsetX, y: mobWorksTextOffsetY, yPercent: mobWorksTextYPercent, opacity: 1 });
+              gsap.set(text, { x: wrkTextX, y: mobWorksTextOffsetY, yPercent: mobWorksTextYPercent, opacity: 1 });
 
               const tl = gsap.timeline({ scrollTrigger: { trigger: wrapper, start: mobWorksScrollStart, end: mobWorksScrollEnd, scrub: mobWorksScrub } });
 
               tl.to(elements, { x: 0, xPercent: -50, duration: mobWorksBoxSpeed, ease: mobWorksBoxEase }, 0)
-                .to(text, { x: mobWorksTextOffsetX + mobWorksTextMoveX, opacity: mobWorksTextFadeTarget, duration: mobWorksTextSpeed, ease: mobWorksTextEase }, 0); 
+                .to(text, { x: wrkTextX + mobWorksTextMoveX, y: mobWorksTextOffsetY + mobWorksTextMoveY, opacity: mobWorksTextFadeTarget, duration: mobWorksTextSpeed, ease: mobWorksTextEase }, 0); 
                 
             } else {
               const startXRest = (window.innerWidth / 2) - mobWorksRestWallVisible + (boxWidth / 2);
@@ -1288,7 +1315,7 @@ export default function Page() {
               <div className="mobile-service-elements absolute top-0 left-1/2 z-10 flex flex-col items-center" style={{ width: mobServiceBoxWidth }}>
                 {idx === 0 && (
                   <div className="mobile-services-text absolute z-20 select-none whitespace-nowrap opacity-0" style={{ left: '100%', top: mobServiceTextTop, marginLeft: mobServiceTextGap }} >
-                    <span className="block font-black uppercase select-none drop-shadow-2xl" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', color: mobServiceTextColor, fontSize: mobServiceTextFontSize, letterSpacing: mobServiceTextLetterSpacing, fontFamily: englishFontFamily }}>{mobServiceTextWord}</span>
+                    <span className="block font-black uppercase select-none drop-shadow-2xl" style={{ writingMode: 'vertical-rl', transform: `rotate(180deg) scaleX(${mobServiceTextScaleX})`, lineHeight: mobServiceTextLineHeight, color: mobServiceTextColor, fontSize: `${mobServiceTextFontSizePx}px`, letterSpacing: mobServiceTextLetterSpacing, fontFamily: englishFontFamily }}>{mobServiceTextWord}</span>
                   </div>
                 )}
                 <Link href={`/works?category=${encodeURIComponent(item.category)}`} className="w-full relative overflow-hidden rounded-[24px] bg-[#222222] border border-white/10 shadow-2xl block" style={{ height: mobServiceBoxHeight }}>
@@ -1460,7 +1487,7 @@ export default function Page() {
                 <Link href={p.slug} className="mobile-work-elements absolute left-1/2 top-0 z-10 flex flex-col items-center group" style={{ width: idx === 0 ? mobWorksBox1Width : mobWorksOtherBoxWidth }}>
                   {idx === 0 && (
                     <div className="mobile-works-text absolute z-20 select-none whitespace-nowrap opacity-0" style={{ right: '100%', top: mobWorksTextTop, marginRight: mobWorksTextGap }} >
-                      <span className="block font-black uppercase select-none drop-shadow-2xl" style={{ writingMode: 'vertical-rl', transform: 'rotate(180deg)', color: mobWorksTextColor, fontSize: mobWorksTextFontSize, letterSpacing: mobWorksTextLetterSpacing, fontFamily: englishFontFamily }}>{mobWorksTextWord}</span>
+                      <span className="block font-black uppercase select-none drop-shadow-2xl" style={{ writingMode: 'vertical-rl', transform: `rotate(180deg) scaleX(${mobWorksTextScaleX})`, lineHeight: mobWorksTextLineHeight, color: mobWorksTextColor, fontSize: `${mobWorksTextFontSizePx}px`, letterSpacing: mobWorksTextLetterSpacing, fontFamily: englishFontFamily }}>{mobWorksTextWord}</span>
                     </div>
                   )}
                   <div className="w-full relative overflow-hidden rounded-[24px] bg-zinc-800 shadow-2xl" style={{ height: idx === 0 ? mobWorksBox1Height : mobWorksOtherBoxHeight }}>

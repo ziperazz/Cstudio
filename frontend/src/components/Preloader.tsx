@@ -42,6 +42,11 @@ export default function Preloader() {
     const ctx = gsap.context(() => {
       let exited = false;
 
+      // فریز شدن روی فریم آخر: ویدیو بعد از پایان نباید از اول شروع شود
+      const freeze = (v: HTMLVideoElement | null) => { if (v) v.pause(); };
+      const onEnded = () => { freeze(dVideo); freeze(mVideo); triggerExit(); };
+      const onPlayAfterEnd = (e: Event) => { if (exited) (e.target as HTMLVideoElement).pause(); };
+
       const triggerExit = () => {
         if (exited) return;
         exited = true;
@@ -53,8 +58,8 @@ export default function Preloader() {
         });
       };
 
-      if (dVideo) dVideo.addEventListener('ended', triggerExit);
-      if (mVideo) mVideo.addEventListener('ended', triggerExit);
+      if (dVideo) { dVideo.addEventListener('ended', onEnded); dVideo.addEventListener('play', onPlayAfterEnd); }
+      if (mVideo) { mVideo.addEventListener('ended', onEnded); mVideo.addEventListener('play', onPlayAfterEnd); }
 
       const safetyTimer = setTimeout(() => {
         triggerExit();
@@ -62,8 +67,8 @@ export default function Preloader() {
 
       return () => {
         clearTimeout(safetyTimer);
-        if (dVideo) dVideo.removeEventListener('ended', triggerExit);
-        if (mVideo) mVideo.removeEventListener('ended', triggerExit);
+        if (dVideo) { dVideo.removeEventListener('ended', onEnded); dVideo.removeEventListener('play', onPlayAfterEnd); }
+        if (mVideo) { mVideo.removeEventListener('ended', onEnded); mVideo.removeEventListener('play', onPlayAfterEnd); }
       };
     }, preloaderRef);
 
