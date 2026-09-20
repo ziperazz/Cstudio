@@ -97,7 +97,7 @@ const heroWordsTransitionSpeed = "0.5s";
 
 const animDuration = 0.55;
 const preloaderDuration = 3;             
-const waitAfterPreload = 2;              
+const waitAfterPreload = 1;              
 const startDelay = preloaderDuration + waitAfterPreload; 
 
 // 🎚️ پنل تنظیم زنده 
