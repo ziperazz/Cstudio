@@ -157,7 +157,7 @@ export default function MediaManagerPage() {
                 {/* ویدیو */}
                 <div className="w-full aspect-video bg-[#050505] relative overflow-hidden">
                   <video 
-                    src={`${process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000'}${file.url}#t=0.1`}
+                    src={`${process.env.NEXT_PUBLIC_BACKEND_URL || 'https://cstudio.ir'}${file.url}#t=0.1`}
                     muted 
                     loop 
                     playsInline

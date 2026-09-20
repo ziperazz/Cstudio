@@ -4,19 +4,21 @@ import React, { useRef, useEffect } from 'react';
 import gsap from 'gsap';
 
 // 🎛️===================================================================🎛️
-//          پنل تنظیمات و داشبورد ویدیوی پرلودر (بدون باگ Scale سافاری)
+//          پنل تنظیمات و داشبورد ویدیوی پرلودر 
 // 🎛️===================================================================🎛️
 
 const preloaderBgColor = "rgba(0, 0, 0, 0.1)";
 const preloaderBlurIntensity = "blur(40px)";
 
-// 🎚️ ویدیو دسکتاپ
+// 🎚️ تنظیمات دسکتاپ
 const desktopVideoSrc = "/PRELOAD.mp4";
-const desktopActualWidth = "2160px"; // معادل همون عرض 480 با اسکیل 4.5
+const desktopVideoWidth = "480px";
+const desktopVideoScale = 4.5;
 
-// 📱 ویدیو موبایل
+// 📱 تنظیمات موبایل
 const mobileVideoSrc = "/preload2.mp4";
-const mobileActualWidth = "180vw";   // معادل همون 100vw با اسکیل 1.8
+const mobileVideoWidth = "100vw";
+const mobileVideoScale = 1.15; // 🚀 عدد طلایی برای متناسب شدن لوگو در موبایل (کاهش از 1.8)
 
 const videoPlaybackRate = 0.8;
 const videoBlendMode = "screen";
@@ -25,17 +27,24 @@ const exitDuration = 1.2;
 
 export default function Preloader() {
   const preloaderRef = useRef<HTMLDivElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const desktopVideoRef = useRef<HTMLVideoElement>(null);
+  const mobileVideoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    if (!preloaderRef.current || !videoRef.current) return;
+    if (!preloaderRef.current) return;
 
-    const video = videoRef.current;
-    video.playbackRate = videoPlaybackRate;
-    video.muted = true;
+    const dVideo = desktopVideoRef.current;
+    const mVideo = mobileVideoRef.current;
+
+    if (dVideo) { dVideo.playbackRate = videoPlaybackRate; dVideo.muted = true; }
+    if (mVideo) { mVideo.playbackRate = videoPlaybackRate; mVideo.muted = true; }
 
     const ctx = gsap.context(() => {
-      const handleVideoEnded = () => {
+      let exited = false;
+
+      const triggerExit = () => {
+        if (exited) return;
+        exited = true;
         gsap.to(preloaderRef.current, {
           yPercent: 100,
           duration: exitDuration,
@@ -44,21 +53,17 @@ export default function Preloader() {
         });
       };
 
-      video.addEventListener('ended', handleVideoEnded);
+      if (dVideo) dVideo.addEventListener('ended', triggerExit);
+      if (mVideo) mVideo.addEventListener('ended', triggerExit);
 
       const safetyTimer = setTimeout(() => {
-        if (preloaderRef.current) {
-          gsap.to(preloaderRef.current, {
-            yPercent: 100,
-            duration: exitDuration,
-            ease: "power4.inOut"
-          });
-        }
+        triggerExit();
       }, 6000);
 
       return () => {
         clearTimeout(safetyTimer);
-        video.removeEventListener('ended', handleVideoEnded);
+        if (dVideo) dVideo.removeEventListener('ended', triggerExit);
+        if (mVideo) mVideo.removeEventListener('ended', triggerExit);
       };
     }, preloaderRef);
 
@@ -70,36 +75,6 @@ export default function Preloader() {
       ref={preloaderRef}
       className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden select-none bg-black"
     >
-      {/* 🚀 استایل‌های خالص CSS بدون استفاده از transform: scale */}
-      <style dangerouslySetInnerHTML={{
-        __html: `
-          .preload-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: ${desktopActualWidth};
-            transform: translateX(${videoOffsetX}px) translate3d(0,0,0);
-            will-change: transform;
-          }
-          .preload-video {
-            width: 100%;
-            height: auto;
-            object-fit: contain;
-          }
-          
-          @media (max-width: 768px) {
-            .preload-wrapper {
-              width: ${mobileActualWidth};
-              height: 100dvh;
-            }
-            .preload-video {
-              height: 100dvh;
-            }
-          }
-        `
-      }} />
-
       <div
         className="absolute inset-0 z-0"
         style={{
@@ -110,22 +85,47 @@ export default function Preloader() {
         }}
       />
 
-      <div className="relative z-10 preload-wrapper pointer-events-none">
+      {/* 💻 نسخه دسکتاپ */}
+      <div
+        className="hidden md:flex relative z-10 pointer-events-none items-center justify-center"
+        style={{ 
+          width: desktopVideoWidth, 
+          transform: `translateX(${videoOffsetX}px) scale(${desktopVideoScale})`,
+          transformOrigin: 'center center'
+        }}
+      >
         <video
-          ref={videoRef}
+          ref={desktopVideoRef}
+          src={desktopVideoSrc}
           autoPlay
           muted
           playsInline
-          preload="auto"
-          className="preload-video"
+          className="w-full h-auto object-contain"
           style={{ mixBlendMode: videoBlendMode as any, backgroundColor: '#000000' }}
-        >
-          {/* 🚀 هندل کردن مدیا کوئری نیتیو */}
-          <source src={mobileVideoSrc} media="(max-width: 768px)" type="video/mp4" />
-          <source src={desktopVideoSrc} type="video/mp4" />
-          مرورگر شما از پخش ویدیو پشتیبانی نمی‌کند.
-        </video>
+        />
       </div>
+
+      {/* 📱 نسخه موبایل */}
+      <div
+        className="flex md:hidden relative z-10 pointer-events-none items-center justify-center"
+        style={{ 
+          width: mobileVideoWidth, 
+          height: '100dvh', 
+          transform: `translateX(${videoOffsetX}px) scale(${mobileVideoScale})`,
+          transformOrigin: 'center center'
+        }}
+      >
+        <video
+          ref={mobileVideoRef}
+          src={mobileVideoSrc}
+          autoPlay
+          muted
+          playsInline
+          className="w-full h-full object-contain"
+          style={{ mixBlendMode: videoBlendMode as any, backgroundColor: '#000000' }}
+        />
+      </div>
+
     </div>
   );
 }

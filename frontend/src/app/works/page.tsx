@@ -147,7 +147,7 @@ const RenderBox = ({ data, boxWidth, boxHeight, boxRadius }: { data: Project, bo
   const h = parseFloat(boxHeight);
   const ratio = `${w} / ${h}`; 
 
-  const videoSrc = data.videos && data.videos.length > 0 ? `http://localhost:5000${data.videos[0]}` : '';
+  const videoSrc = data.videos && data.videos.length > 0 ? `https://cstudio.ir${data.videos[0]}` : '';
 
   const handleMouseEnter = (e: React.MouseEvent<HTMLAnchorElement>) => {
     const media = e.currentTarget.querySelector('.work-media') as HTMLVideoElement;
@@ -264,7 +264,7 @@ function WorksContent() {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/projects`, { cache: 'no-store' });
+        const res = await fetch(`https://cstudio.ir/api/projects`, { cache: 'no-store' });
         const data = await res.json();
         if (data.success) {
           setAllProjects(data.data || []);

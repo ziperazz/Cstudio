@@ -486,7 +486,7 @@ export default function Page() {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/projects`)
+        const res = await fetch(`https://cstudio.ir/api/projects`)
         const data = await res.json();
         if (data.success && data.data) {
           setProjectsData(data.data.slice(0, 5)); 
@@ -544,7 +544,7 @@ export default function Page() {
     }
     
     const videoUrl = p.videos && p.videos.length > 0 
-      ? `http://localhost:5000${p.videos[0]}`
+      ? `https://cstudio.ir${p.videos[0]}`
       : null;
 
     return {
