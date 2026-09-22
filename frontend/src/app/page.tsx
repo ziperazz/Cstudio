@@ -7,6 +7,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Preloader from '@/components/Preloader';
 import ContactDrawer from '@/components/ContactDrawer';
+import { ensureMutedAutoplay, ensureMutedAutoplayAll } from '@/utils/autoplay';
 
 // 🎯 وارد کردن فونت‌های گوگل
 import { orbitronFont, outfitFont } from '@/app/fonts';
@@ -437,6 +438,7 @@ export default function Page() {
   const heroAnimsRef = useRef<gsap.core.Timeline[]>([]);
 
   const heroRef = useRef<HTMLElement>(null);
+  const heroVideoRef = useRef<HTMLVideoElement>(null);
   const maskRef = useRef<HTMLDivElement>(null);
   const cRef = useRef<HTMLDivElement>(null);
   const iDotRef = useRef<HTMLDivElement>(null);
@@ -529,6 +531,11 @@ export default function Page() {
     }
   }, [isMobile, preloaderDone, videoReady]);
 
+  // رفع باگ سافاری آیفون: بلاک شدن اتوپلی به‌خاطر نبود اتریبیوت muted در HTML اولیه
+  useEffect(() => {
+    ensureMutedAutoplay(heroVideoRef.current);
+  }, [isMobile]);
+
   useEffect(() => {
     const videos = Array.from(document.querySelectorAll('video[data-lazyplay]')) as HTMLVideoElement[];
     if (videos.length === 0) return;
@@ -537,7 +544,7 @@ export default function Page() {
       entries.forEach((entry) => {
         const video = entry.target as HTMLVideoElement;
         if (entry.isIntersecting) {
-          video.play().catch(() => {});
+          ensureMutedAutoplay(video);
         } else {
           video.pause();
         }
@@ -1169,12 +1176,13 @@ export default function Page() {
 
       <section ref={heroRef} className="hero antialiased" dir="ltr" style={liveHeroVars}>
         <div className="hero__media">
-          <video 
+          <video
             key={isMobile ? "mobile" : "desktop"}
-            autoPlay 
-            loop 
-            muted 
-            playsInline 
+            ref={heroVideoRef}
+            autoPlay
+            loop
+            muted
+            playsInline
             onLoadStart={() => setVideoReady(false)}
             onCanPlayThrough={() => setVideoReady(true)}
           >

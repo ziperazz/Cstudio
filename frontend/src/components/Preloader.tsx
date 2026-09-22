@@ -2,6 +2,7 @@
 
 import React, { useRef, useEffect } from 'react';
 import gsap from 'gsap';
+import { ensureMutedAutoplay } from '@/utils/autoplay';
 
 // 🎛️===================================================================🎛️
 //          پنل تنظیمات و داشبورد ویدیوی پرلودر 
@@ -36,8 +37,10 @@ export default function Preloader() {
     const dVideo = desktopVideoRef.current;
     const mVideo = mobileVideoRef.current;
 
-    if (dVideo) { dVideo.playbackRate = videoPlaybackRate; dVideo.muted = true; }
-    if (mVideo) { mVideo.playbackRate = videoPlaybackRate; mVideo.muted = true; }
+    // رفع باگ سافاری آیفون: اتوپلی اولیه‌ی HTML به‌خاطر نبود اتریبیوت muted بلاک می‌شود،
+    // پس خودمان muted را ست کرده و play() را صریحاً صدا می‌زنیم
+    if (dVideo) { dVideo.playbackRate = videoPlaybackRate; ensureMutedAutoplay(dVideo); }
+    if (mVideo) { mVideo.playbackRate = videoPlaybackRate; ensureMutedAutoplay(mVideo); }
 
     const ctx = gsap.context(() => {
       let exited = false;

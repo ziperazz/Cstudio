@@ -7,6 +7,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Preloader from '@/components/Preloader';
 import ContactDrawer from '@/components/ContactDrawer';
+import { ensureMutedAutoplayAll } from '@/utils/autoplay';
 
 import { orbitronFont, outfitFont } from '@/app/fonts';
 
@@ -80,6 +81,11 @@ export default function AboutPage() {
 
   const horizontalSectionRef = useRef<HTMLElement>(null);
   const horizontalContainerRef = useRef<HTMLDivElement>(null);
+
+  // رفع باگ سافاری آیفون: بلاک شدن اتوپلی به‌خاطر نبود اتریبیوت muted در HTML اولیه
+  useEffect(() => {
+    if (mainContainerRef.current) ensureMutedAutoplayAll(mainContainerRef.current);
+  }, []);
 
   useEffect(() => {
     if (mobileMenuOpen || contactDrawerOpen) {
