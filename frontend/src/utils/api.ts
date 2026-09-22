@@ -1,4 +1,8 @@
-const API_URL = 'https://cstudio.ir/api';
+import { getAdminToken, safeGetLocal, clearAdminSession, clearClientSession } from '@/utils/adminAuth';
+
+// در بیلد باید هم روی سرور و هم لوکال درست کار کند؛ اگر NEXT_PUBLIC_API_URL ست نشده باشد
+// (روی سرور احتمالاً همیشه ست است) روی آدرس پروداکشن fallback می‌شود
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://cstudio.ir/api';
 
 export async function fetchWithAuth(
   endpoint: string, 
@@ -8,9 +12,10 @@ export async function fetchWithAuth(
   let token;
   
   if (userType === 'client') {
-    token = localStorage.getItem('token');
+    token = safeGetLocal('token');
   } else {
-    token = localStorage.getItem('adminToken');
+    // اگر localStorage در دسترس نبود (سافاری)، توکن از کوکی خوانده می‌شود
+    token = getAdminToken();
   }
 
   if (!token) {
@@ -42,14 +47,11 @@ export async function fetchWithAuth(
 
     if (response.status === 401) {
       if (userType === 'client') {
-        localStorage.removeItem('token');
-        localStorage.removeItem('clientInfo');
-        document.cookie = 'clientToken=; path=/; max-age=0';
-        window.location.href = '/auth?type=client';
+        clearClientSession();
+        window.location.replace('/auth?type=client');
       } else {
-        localStorage.removeItem('adminToken');
-        document.cookie = 'adminToken=; path=/; max-age=0';
-        window.location.href = '/auth';
+        clearAdminSession();
+        window.location.replace('/auth');
       }
       throw new Error('Token expired');
     }

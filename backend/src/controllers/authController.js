@@ -107,3 +107,67 @@ exports.loginClient = async (req, res) => {
         res.status(500).json({ success: false, message: 'خطای سرور', error: error.message });
     }
 };
+// ==========================================
+// 🔐 اطلاعات ادمین لاگین‌شده (Who am I)
+// ==========================================
+exports.getAdminProfile = async (req, res) => {
+    try {
+        res.status(200).json({
+            success: true,
+            data: {
+                id: req.admin._id,
+                username: req.admin.username,
+                createdAt: req.admin.createdAt
+            }
+        });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'خطای سرور', error: error.message });
+    }
+};
+
+// ==========================================
+// 🔑 تغییر رمز عبور پنل ادمین
+// ==========================================
+exports.changeAdminPassword = async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({ success: false, message: 'رمز عبور فعلی و رمز عبور جدید الزامی است.' });
+        }
+
+        if (newPassword.length < 6) {
+            return res.status(400).json({ success: false, message: 'رمز عبور جدید باید حداقل ۶ کاراکتر باشد.' });
+        }
+
+        if (currentPassword === newPassword) {
+            return res.status(400).json({ success: false, message: 'رمز عبور جدید نباید با رمز عبور فعلی یکسان باشد.' });
+        }
+
+        // req.admin از protectAdmin می‌آید و بدون فیلد password است، پس دوباره کامل می‌خوانیم
+        const admin = await Admin.findById(req.admin._id);
+        if (!admin) {
+            return res.status(404).json({ success: false, message: 'ادمین یافت نشد.' });
+        }
+
+        const isMatch = await admin.matchPassword(currentPassword);
+        if (!isMatch) {
+            return res.status(401).json({ success: false, message: 'رمز عبور فعلی اشتباه است.' });
+        }
+
+        // هش شدن رمز در هوک pre('save') مدل Admin انجام می‌شود
+        admin.password = newPassword;
+        await admin.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'رمز عبور با موفقیت تغییر کرد. لطفاً دوباره وارد شوید.',
+            // توکن جدید تا ادمین بدون قطع شدن دسترسی بتواند ادامه دهد
+            token: generateToken(admin._id)
+        });
+
+    } catch (error) {
+        console.error('Change Admin Password Error:', error);
+        res.status(500).json({ success: false, message: 'خطای سرور', error: error.message });
+    }
+};

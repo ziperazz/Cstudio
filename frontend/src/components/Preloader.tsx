@@ -19,7 +19,7 @@ const desktopVideoScale = 4.5;
 // 📱 تنظیمات موبایل
 const mobileVideoSrc = "/preload2.mp4";
 const mobileVideoWidth = "100vw";
-const mobileVideoScale = 1.15; // 🚀 عدد طلایی برای متناسب شدن لوگو در موبایل (کاهش از 1.8)
+const mobileVideoScale = 0.72; // 📉 کوچک‌تر شده برای موبایل (قبلاً 1.15 → 0.9 → 0.72)
 
 const videoPlaybackRate = 0.8;
 const videoBlendMode = "screen";

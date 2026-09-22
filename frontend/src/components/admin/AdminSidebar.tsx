@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { orbitronFont } from '@/app/fonts';
+import { clearAdminSession } from '@/utils/adminAuth';
 
 const orbitron = orbitronFont;
 const persianFontFamily = '"AzarMehr", "OpenAI Sans", sans-serif';
@@ -67,6 +68,12 @@ const menuItems = [
     desc: 'مدیریت محتوای تحویلی؛ اختصاص لینک‌های دانلود ویدیوهای نهایی به پنل هر مشتری.',
     icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
   },
+  { 
+    name: 'تنظیمات و امنیت', 
+    path: '/admin/settings', 
+    desc: 'تغییر رمز عبور ورود به پنل مدیریت و مشاهده نکات امنیتی نگهداری حساب.',
+    icon: <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+  },
 ];
 
 export default function AdminSidebar() {
@@ -81,8 +88,10 @@ export default function AdminSidebar() {
 
   const handleLogout = () => {
     if(confirm('آیا از خروج خود اطمینان دارید؟')) {
-      localStorage.removeItem('adminToken');
-      router.push('/auth');
+      // هم localStorage و هم کوکی پاک می‌شود؛ قبلاً فقط localStorage پاک می‌شد و
+      // کوکی باقی‌مانده باعث می‌شد middleware همچنان کاربر را لاگین‌شده ببیند
+      clearAdminSession();
+      router.replace('/auth');
     }
   };
 

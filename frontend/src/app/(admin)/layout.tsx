@@ -5,22 +5,33 @@ import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import AdminSidebar from '@/components/admin/AdminSidebar';
 import AdminTopbar from '@/components/admin/AdminTopbar';
+import { getAdminToken, clearAdminSession } from '@/utils/adminAuth';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    // چک کردن توکن امنیتی ادمین
-    const token = localStorage.getItem('adminToken');
-    
+    // توکن از کوکی یا localStorage خوانده می‌شود (هرکدام که موجود باشد).
+    // خواندن مستقیم localStorage در سافاری می‌توانست استثنا پرتاب کند و
+    // در نتیجه ریدایرکت به صفحه‌ی ورود هیچ‌وقت اجرا نمی‌شد.
+    const token = getAdminToken();
+
     if (!token) {
-      // اگر توکنی نبود، سریعاً هدایت میشه به صفحه ورود
-      router.push('/auth');
-    } else {
-      // اگر توکن بود، اجازه ورود میده
-      setIsAuthenticated(true);
+      // نشست ناقص احتمالی هم پاک می‌شود تا middleware دوباره اجازه‌ی ورود ندهد
+      clearAdminSession();
+      // replace به‌جای push تا صفحه‌ی پنل در تاریخچه‌ی مرورگر نماند
+      router.replace('/auth');
+      // پشتیبان: اگر به هر دلیلی ناوبری کلاینتی انجام نشد، مرورگر را دستی منتقل می‌کنیم
+      const fallback = setTimeout(() => {
+        if (window.location.pathname.startsWith('/admin')) {
+          window.location.replace('/auth');
+        }
+      }, 600);
+      return () => clearTimeout(fallback);
     }
+
+    setIsAuthenticated(true);
   }, [router]);
 
   // تا زمانی که وضعیت لاگین مشخص نشده، این لودینگ فضایی نمایش داده میشه

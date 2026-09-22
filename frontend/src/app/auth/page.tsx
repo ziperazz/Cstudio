@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { orbitronFont } from '@/app/fonts';
 import Link from 'next/link';
+import { saveAdminToken, safeSetLocal, setAuthCookie } from '@/utils/adminAuth';
 
 
 const persianFontFamily = '"AzarMehr", "OpenAI Sans", sans-serif';
@@ -30,6 +31,19 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loginType, setLoginType] = useState<'admin' | 'client'>('admin');
 
+  // مقصد بعد از ورود: middleware مسیر درخواستی را در پارامتر redirect می‌گذارد.
+  // از window.location خوانده می‌شود (نه useSearchParams) تا این صفحه استاتیک بماند.
+  // فقط مسیرهای داخلی پذیرفته می‌شوند تا امکان ریدایرکت به سایت بیرونی وجود نداشته باشد.
+  const getRedirectTarget = (fallback: string, prefix: string) => {
+    try {
+      const target = new URLSearchParams(window.location.search).get('redirect');
+      if (target && target.startsWith(prefix) && !target.startsWith('//')) return target;
+    } catch {
+      // noop
+    }
+    return fallback;
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -50,16 +64,14 @@ export default function LoginPage() {
 
       if (data.success) {
         if (loginType === 'admin') {
-          localStorage.setItem('adminToken', data.token);
-          // 🎯 فقط این خط اضافه شد
-          document.cookie = `adminToken=${data.token}; path=/; max-age=604800; SameSite=Strict`;
-          router.push('/admin');
+          // توکن هم‌زمان در localStorage و کوکی ذخیره می‌شود تا API و middleware هماهنگ بمانند
+          saveAdminToken(data.token);
+          router.replace(getRedirectTarget('/admin', '/admin'));
         } else {
-          localStorage.setItem('token', data.token);
-          localStorage.setItem('clientInfo', JSON.stringify(data.client));
-          // 🎯 فقط این خط اضافه شد
-          document.cookie = `clientToken=${data.token}; path=/; max-age=604800; SameSite=Strict`;
-          router.push('/client/dashboard');
+          safeSetLocal('token', data.token);
+          safeSetLocal('clientInfo', JSON.stringify(data.client));
+          setAuthCookie('clientToken', data.token);
+          router.replace(getRedirectTarget('/client/dashboard', '/client'));
         }
       } else {
         setError(data.message || 'اطلاعات ورود اشتباه است.');
